@@ -41,6 +41,12 @@ body {
   background-color: var(--color-gray-dark);
 }
 
+.error {
+  text-align: center;
+  padding: 50px;
+  color: var( --color-error);
+}
+
 header {
   display: flex;
   justify-content: space-between;
