@@ -1,7 +1,11 @@
+import { RenderFooterInfo } from "../components/RenderFooterInfo";
+
 export const Layout = () => {
-    return (
-        <>
-            Layout
-        </>
-    )
-}
+  return (
+    <>
+      <footer>
+        <RenderFooterInfo></RenderFooterInfo>
+      </footer>
+    </>
+  );
+};
