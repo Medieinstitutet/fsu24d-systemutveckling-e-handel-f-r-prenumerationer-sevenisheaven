@@ -7,16 +7,20 @@ import { RenderFooterInfo } from "../components/RenderFooterInfo";
 export const Layout = () => {
   return (
     <>
-      <header>
-        <NavLink to={"/"}>
-          <img id="header-logo" src={Logo} />
-        </NavLink>
-        <Nav />
-      </header>
-      <Outlet />
-      <footer>
-        <RenderFooterInfo></RenderFooterInfo>
-      </footer>
+      <div className="main_container">
+        <header>
+          <NavLink to={"/"}>
+            <img id="header-logo" src={Logo} />
+          </NavLink>
+          <Nav />
+        </header>
+        <main>
+          <Outlet />
+        </main>
+        <footer>
+          <RenderFooterInfo></RenderFooterInfo>
+        </footer>
+      </div>
     </>
   );
 };
