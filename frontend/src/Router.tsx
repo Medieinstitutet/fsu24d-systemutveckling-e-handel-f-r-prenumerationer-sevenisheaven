@@ -10,6 +10,9 @@ import { Product } from "./pages/Product";
 import { Products } from "./pages/Products";
 import { Subscription } from "./pages/Subscription";
 import { NotFound } from "./pages/NotFound";
+import { Login } from "./pages/Login";
+import { MyPage } from "./pages/MyPage";
+import { Blocked } from "./pages/Blocked";
 
 export const router = createBrowserRouter([
     {
@@ -22,12 +25,12 @@ export const router = createBrowserRouter([
             element: <Home />,
           },
           {
-            path: "/products",
-            element: <Products />,
+            path: "/blocked",
+            element: <Blocked />,
           },
           {
-            path: "/products/:id",
-            element: <Product />,
+            path: "/login",
+            element: <Login />,
           },
           {
             path: "/subscription",
@@ -43,6 +46,25 @@ export const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: "/",
+        element: <ProtectedRoutes><Layout /></ProtectedRoutes>,
+        errorElement: <NotFound />,
+        children: [
+         {
+            path: "/products",
+            element: <Products />,
+          },
+          {
+            path: "/products/:id",
+            element: <Product />,
+          },
+           {
+            path: "/my-page",
+            element: <MyPage />,
+          },
+        ]
+  },
       {
         path: "/",
         element: <ProtectedRoutes><LayoutAdmin /></ProtectedRoutes>,
