@@ -1,7 +1,13 @@
+import Logo from "../assets/logo.png"
+import { NavAdmin } from "../components/NavAdmin"
+
 export const LayoutAdmin = () => {
-    return (
+       return (
         <>
-            LayoutAdmin
+            <header>
+                <img id="header-logo" src={Logo} />
+                <NavAdmin />
+            </header>
         </>
     )
 }
