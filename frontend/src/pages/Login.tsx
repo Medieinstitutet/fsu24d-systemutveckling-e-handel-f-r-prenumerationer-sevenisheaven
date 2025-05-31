@@ -19,16 +19,6 @@ export const Login = () => {
     }
   };
 
-  const handleRegister = async () => {
-    try {
-      await register(username, password);
-      alert("Registration successful! You are now logged in.");
-      navigate("/admin/products");
-    } catch (error: any) {
-      alert(error.message || "Registration failed. Try a different username.");
-    }
-  };
-
   return (
     <>
       <h2>{typeOfLogin === "user" ? "User Login" : "Admin Login"}</h2>
@@ -48,9 +38,6 @@ export const Login = () => {
         />
         <div className="button-div">
           <button type="submit">Login</button>
-          <button type="button" onClick={handleRegister}>
-            Register
-          </button>
           <button
             type="button"
             onClick={() =>

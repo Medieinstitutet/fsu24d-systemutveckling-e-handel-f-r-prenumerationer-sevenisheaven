@@ -112,11 +112,12 @@ input, button, select {
 .button-div {
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   width: 400px;
 }
 
 .button-div button {
-  width: 120px;
+  width: 50%;
 }
 
 main {
