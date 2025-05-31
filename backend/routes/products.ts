@@ -24,6 +24,15 @@ r.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
+r.post('/', async (req: Request, res: Response) => {
+    try {
+        await Product.insertMany(req.body)
+        res.json({ message: 'Created done' })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
 r.patch('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
