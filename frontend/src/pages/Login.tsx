@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
 export const Login = () => {
-  const { login, register } = useAuth();
+  const { login } = useAuth();
   const [typeOfLogin, setTypeOfLogin] = useState<"user" | "admin">("user");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +24,7 @@ export const Login = () => {
       <h2>{typeOfLogin === "user" ? "User Login" : "Admin Login"}</h2>
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Username"
+          placeholder="E-mail"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
