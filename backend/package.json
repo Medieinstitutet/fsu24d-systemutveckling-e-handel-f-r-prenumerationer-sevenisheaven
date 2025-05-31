@@ -2,7 +2,6 @@
   "name": "sevenisheaven",
   "version": "1.0.0",
   "main": "index.ts",
-  "type": "module",
   "scripts": {
     "dev": "ts-node-dev -r dotenv/config index.ts",
     "dev:debug": "ts-node-dev --inspect-brk -r dotenv/config index.ts"
@@ -14,13 +13,16 @@
   "dependencies": {
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.1",
     "stripe": "^18.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.17.57",

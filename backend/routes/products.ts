@@ -1,11 +1,13 @@
 import { Router, Request, Response } from 'express'
 
+import Product from '../models/Product'
+
 const r = Router()
 
 r.get('/', async (req: Request, res: Response) => {
     try {
-        //todo: get all from DB
-        res.json([])
+        const products = await Product.find()
+        res.json(products)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -14,9 +16,9 @@ r.get('/', async (req: Request, res: Response) => {
 r.get('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        //todo: get from DB filtered by id
         
-        res.json({})
+        const product = await Product.findById(id)
+        res.json(product)
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -25,9 +27,11 @@ r.get('/:id', async (req: Request, res: Response) => {
 r.patch('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        //todo: update said object in db
+        //todo: validate body maybe instead?
+
+        await Product.updateOne({ _id: id }, { ...req.body  })
         
-        res.json([])
+        res.json({ message: 'Update done' })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -36,7 +40,8 @@ r.patch('/:id', async (req: Request, res: Response) => {
 r.delete('/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params
-        //todo: update said object in db
+
+        await Product.deleteOne({ _id: id })
         
         res.json({ message: 'Deleted' })
     } catch (error) {
@@ -44,4 +49,4 @@ r.delete('/:id', async (req: Request, res: Response) => {
     }
 })
 
-export default router
+export default r
