@@ -14,7 +14,7 @@ const ProductSchema = new Schema({
         required: true
     },
     stock: {
-        type: Array,
+        type: Number,
         required: true
     },
     category: {
@@ -27,4 +27,4 @@ const ProductSchema = new Schema({
     }
 })
 
-export default model('Products', ProductSchema)
+export default model('products', ProductSchema)
