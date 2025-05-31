@@ -5,6 +5,7 @@ import {
   faInstagram,
 } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
+import Logo from "../assets/logo.png";
 
 export const RenderFooterInfo = () => {
   return (
@@ -17,17 +18,17 @@ export const RenderFooterInfo = () => {
         </div>
         <ul className="footer_links">
           <li>
-            <Link to={"/about-us"}>Admin</Link>
+            <Link to={"/admin"}>Admin</Link>
           </li>
           <li>
-            <Link to={"/about-us"}>Login</Link>
+            <Link to={"/login"}>Login</Link>
           </li>
           <li>
-            <Link to={"/about-us"}>Subscribe</Link>
+            <Link to={"/subscribtion"}>Subscribe</Link>
           </li>
         </ul>
 
-        <div>LOGO</div>
+        <div><img id="footer-logo" src={Logo} /></div>
         <div className="footer_copyright">
           <p>
             © 1996–2025 Totally Confused Socks. All rights reserved
