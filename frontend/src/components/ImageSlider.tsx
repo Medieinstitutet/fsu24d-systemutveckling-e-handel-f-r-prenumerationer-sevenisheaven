@@ -113,11 +113,11 @@ export const ImageSlider = () => {
   };
 
   const showNextImage = () => {
-    setIndex((index) => (index === products.length - 3 ? 0 : index + 1));
+    setIndex((index) => (index === products.length - 4 ? 0 : index + 1));
   };
 
   const showPreviousImage = () => {
-    setIndex((index) => (index === 0 ? products.length - 3 : index - 1));
+    setIndex((index) => (index === 0 ? products.length - 4 : index - 1));
   };
 
   return (
@@ -127,8 +127,8 @@ export const ImageSlider = () => {
           {/* Slider Container */}
           <div className="slider-track" style={slideStyle}>
             {products.map((p, i) => (
-              <div className="slide">
-                <Link key={i} to={`/product/asd`} >
+              <div key={i} className="slide">
+                <Link to={`/product/asd`} >
                   <img src={p.image} alt="" className="slide-image" />
                 </Link>
                 <h3>{p.name}</h3>
