@@ -1,20 +1,39 @@
-//import 'dotenv'
-import express from 'express'
-import mongoose from 'mongoose'
-import cors from 'cors'
+import dotenv from "dotenv";
+dotenv.config();
 
-import productsRouter from './routes/products'
-import subscriptionsRouter from './routes/subscriptions'
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
 
-const app = express()             
+import productsRouter from "./routes/products"; 
+import subscriptionsRouter from "./routes/subscription";
+import usersRouter from "./routes/users";
 
-app.use(cors()) 
+const app = express();
 
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
-app.use('/products', productsRouter)
-app.use('/subscriptions', subscriptionsRouter)
+app.use("/products", productsRouter);
+app.use("/users", usersRouter);
+app.use("/subscriptions", subscriptionsRouter);
 
-mongoose.connect(process.env.DB_URL || '')
+app.get("/", (_, res) => {
+  res.send({ message: "Api running" });
+});
 
-app.listen(process.env.PORT || 5000)
+const connect = async () => {
+  try {
+    await mongoose.connect(process.env.DB_URL || "");
+    console.log("Connected to MongoDB");
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`The server is running at http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error("MongoDB connection failed:", err);
+  }
+};
+
+connect();
