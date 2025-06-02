@@ -24,9 +24,7 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Incorrect Credentials" });
     }
 
-    const userInfo = {
-      email: user.email,
-    };
+    const userInfo = { email: user.email, role: user.role };
 
     const refreshToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "7d",
@@ -42,12 +40,11 @@ export const login = async (req, res) => {
 );
       
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-      path: "/users/refresh-token",
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+});
 
     const accessToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
@@ -77,7 +74,7 @@ export const refreshToken = async (req, res) => {
       return res.status(403).json({ message: "Invalid token" });
     }
 
-    const userInfo = { email: user.email };
+    const userInfo = { email: user.email, role: user.role };
 
     const newRefreshToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "7d",
@@ -85,23 +82,26 @@ export const refreshToken = async (req, res) => {
 
     await User.updateOne({ _id: user._id }, { $set: { token: newRefreshToken } });
 
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24 * 7, 
-      path: "/users/refresh-token",
-    });
+    res.cookie("refreshToken", refreshToken, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+});
 
     const accessToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
     });
 
-    res.json({
-      user: { email: userInfo.email },
-      expires_in: 60 * 15,
-      token: accessToken,
-    });
+   res.json({
+  user: {
+    email: user.email,
+    role: user.role,
+  },
+  expires_in: 60 * 15,
+  token: accessToken,
+   });
+    
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -115,7 +115,7 @@ export const clearToken = async (req: Request, res: Response) => {
       await User.updateOne({ token }, { $set: { token: "" } });
     }
 
-    res.clearCookie("refreshToken", { path: "/users/refresh-token" });
+    res.clearCookie("refreshToken");
     res.status(200).json({ success: true, message: "Token cleared" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -124,7 +124,7 @@ export const clearToken = async (req: Request, res: Response) => {
 
 export const getUsers = async (req: Request, res: Response) => {
   try { 
-    const user = await User.find().populate('subscription_id').populate('user_role_id');
+    const user = await User.find().populate('subscription_id');
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -135,7 +135,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
 
-    const user = await User.findOne({ email }).populate('subscription_id').populate('user_role_id');
+    const user = await User.findOne({ email }).populate('subscription_id');
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });

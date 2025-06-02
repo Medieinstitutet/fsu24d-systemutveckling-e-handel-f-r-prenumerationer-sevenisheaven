@@ -13,9 +13,10 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
+
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  
   const login = async (
   email: string, 
   password: string, 
@@ -49,10 +50,17 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }
 };
 
-  const logout = () => {
-    setUser(null);
-    fetch(API_URL + "/users/logout", { method: "POST", credentials: "include" });
-  };
+  const logout = async () => {
+  setUser(null);
+  try {
+    await fetch(`${API_URL}/users/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.error("Logout failed", err);
+  }
+};
 
   const refreshToken = async () => {
     try {

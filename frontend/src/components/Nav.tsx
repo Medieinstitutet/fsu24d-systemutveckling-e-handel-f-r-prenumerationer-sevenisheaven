@@ -15,7 +15,8 @@ export const Nav = () => {
         </>
       ) : (
         <>
-          <button onClick={logout}>Logout</button>
+            <button onClick={logout}>Logout</button>
+            <NavLink to={"/products"}>Socks</NavLink>
           <NavLink to={"/subscription"}>
             <div id="button-style">Subscription</div>
           </NavLink>

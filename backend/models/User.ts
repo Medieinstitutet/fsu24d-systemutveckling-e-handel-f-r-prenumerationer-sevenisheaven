@@ -43,6 +43,7 @@ const User = new Schema({
     type: Types.ObjectId,
     required: true,
     ref: "subscriptions",
+    default: () => new Types.ObjectId("68380950c659b1a48ce18927"),
   },
   token: {
     type: String,

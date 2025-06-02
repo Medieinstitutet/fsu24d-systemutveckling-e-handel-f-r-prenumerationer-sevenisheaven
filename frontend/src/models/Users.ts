@@ -1,4 +1,4 @@
-export type Userd = {
+export type Users = {
   _id: string;
   email: string;
   password: string;
@@ -9,10 +9,11 @@ export type Userd = {
   city: string;
   street_address: string;
   postal_code: string;
+  subscription_id: string;
   token: string;
 };
 
-export interface ICustomerCreate {
+export interface IUserCreate {
   email: string;
   password: string;
   firstname: string;
@@ -22,10 +23,10 @@ export interface ICustomerCreate {
   city: string;
   street_address: string;
   postal_code: string;
-  /* token: string; */
+  subscription_id: string;
 }
 
-export interface ICustomerUpdate {
+export interface IUserUpdate {
   firstname: string;
   lastname: string;
   phone: string;
