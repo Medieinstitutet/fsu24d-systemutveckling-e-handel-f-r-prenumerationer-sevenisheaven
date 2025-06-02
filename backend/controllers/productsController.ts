@@ -2,14 +2,32 @@ import { Request, Response } from 'express'
 
 import Product from '../models/Product'
 
-export const getProducts = ( async (req: Request, res: Response) => {
-    try {
-        const products = await Product.find().populate('subscription_id');
-        res.json(products)
-    } catch (error) {
-        res.status(500).json({ message: error.message })
+export const getProducts = async (req: Request, res: Response) => {
+  try {
+    const { subscriptionId  } = req.query;    
+
+    let query = Product.find();
+
+    if (subscriptionId) {
+      query = query.populate({
+        path: "subscription_id",
+        match: { _id: subscriptionId },
+      });
+    } else {
+      query = query.populate("subscription_id");
     }
-})
+
+    const products = await query;
+
+    const filtered = subscriptionId
+      ? products.filter((p) => p.subscription_id !== null)
+      : products;
+
+    res.json(filtered);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const getProductById = ( async (req: Request, res: Response) => {
     try {

@@ -1,110 +1,14 @@
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useProducts } from "../hooks/useProducts";
 
 export const ImageSlider = () => {
-  const products = [
-    {
-      name: "Guitar",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Piano",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Drum Set",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Violin",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Microphone",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Synthesizer",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Bass Guitar",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Trumpet",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Saxophone",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Flute",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Harmonica",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Electric Guitar",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Accordion",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Banjo",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Tambourine",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Cello",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Clarinet",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Oboe",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Triangle",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-    {
-      name: "Maracas",
-      image:
-        "https://miro.medium.com/v2/resize:fit:1100/format:webp/1*uNCVd_VqFOcdxhsL71cT5Q.jpeg",
-    },
-  ];
+  const { products } = useProducts();
+
+  if (products.length > 0) {
+    console.log(products);
+  }
 
   const [index, setIndex] = useState<number>(0);
 
@@ -128,10 +32,10 @@ export const ImageSlider = () => {
           <div className="slider-track" style={slideStyle}>
             {products.map((p, i) => (
               <div key={i} className="slide">
-                <Link to={`/product/asd`} >
+                <Link to={`/product/asd`}>
                   <img src={p.image} alt="" className="slide-image" />
                 </Link>
-                <h3>{p.name}</h3>
+                <h3>{p.product_name}</h3>
               </div>
             ))}
           </div>
