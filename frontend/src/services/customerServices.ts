@@ -1,4 +1,4 @@
-import { ICustomerCreate, ICustomerUpdate, Customer } from "../models/Customer";
+import { ICustomerCreate, ICustomerUpdate, Customer } from "../models/Users";
 import { api, handleRequest } from "./baseService";
 const CUSTOMERS_ENDPOINT = "/customers";
 
