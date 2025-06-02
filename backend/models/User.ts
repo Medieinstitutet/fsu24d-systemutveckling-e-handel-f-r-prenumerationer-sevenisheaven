@@ -46,7 +46,7 @@ const User = new Schema({
   },
   token: {
     type: String,
-    required: true,
+    default: "", 
   },
 });
 
