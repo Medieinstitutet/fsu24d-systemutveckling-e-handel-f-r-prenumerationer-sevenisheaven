@@ -40,10 +40,6 @@ export const router = createBrowserRouter([
             path: "/order-confirmation",
             element: <OrderConfirmation />,
           },
-          {
-            path: "/admin",
-            element: <Admin />,
-          },
         ],
       },
       {
@@ -51,7 +47,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoutes><Layout /></ProtectedRoutes>,
         errorElement: <NotFound />,
         children: [
-         {
+          {
             path: "/products",
             element: <Products />,
           },
@@ -59,21 +55,25 @@ export const router = createBrowserRouter([
             path: "/products/:id",
             element: <Product />,
           },
-           {
+          {
             path: "/my-page",
             element: <MyPage />,
           },
         ]
-  },
+      },
       {
         path: "/",
         element: <ProtectedRoutes><LayoutAdmin /></ProtectedRoutes>,
         errorElement: <NotFound />,
         children: [
-        {
-          path: "admin/products",
-          element: <AdminProducts />,
-        }
+          {
+            path: "admin/products",
+            element: <AdminProducts />,
+          },
+          {
+            path: "/admin",
+            element: <Admin />,
+          },
         ]
-  }
-])
+      }
+    ])

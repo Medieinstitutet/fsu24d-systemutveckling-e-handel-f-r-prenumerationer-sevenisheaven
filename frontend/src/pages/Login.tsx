@@ -4,29 +4,29 @@ import { useAuth } from "../hooks/useAuth";
 
 export const Login = () => {
   const { login } = useAuth();
-  const [typeOfLogin, setTypeOfLogin] = useState<"user" | "admin">("user");
-  const [username, setUsername] = useState("");
+  const [typeOfLogin, setTypeOfLogin] = useState<"customer" | "admin">("customer");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login(username, password);
-      navigate(typeOfLogin === "user" ? "/my-page" : "/admin");
-    } catch (error) {
-      alert("Invalid username or password! Please try again.");
-    }
-  };
-
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    await login(email, password, typeOfLogin);
+    navigate(typeOfLogin === "customer" ? "/my-page" : "/admin");
+  } catch (error) {
+    alert(error instanceof Error ? error.message : "Invalid email or password! Please try again.");
+  }
+};
+  
   return (
     <>
-      <h2>{typeOfLogin === "user" ? "User Login" : "Admin Login"}</h2>
+      <h2>{typeOfLogin === "customer" ? "User Login" : "Admin Login"}</h2>
       <form onSubmit={handleSubmit}>
         <input
           placeholder="E-mail"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
@@ -41,10 +41,10 @@ export const Login = () => {
           <button
             type="button"
             onClick={() =>
-              setTypeOfLogin((prev) => (prev === "user" ? "admin" : "user"))
+              setTypeOfLogin((prev) => (prev === "customer" ? "admin" : "customer"))
             }
           >
-           {typeOfLogin === "user" ? "Admin" : "User"} Login
+           {typeOfLogin === "customer" ? "Admin" : "Customer"} Login
           </button>
         </div>
       </form>

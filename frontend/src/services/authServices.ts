@@ -11,13 +11,14 @@ export type tokenResponseType = {
 };
 
 export const signInToken = async (
-  username: string,
-  password: string
+  email: string,
+  password: string,
+  role: string
 ): Promise<tokenResponseType> => {
   try {
     const response = await axios.post<tokenResponseType>(
-      `${API_URL}/auth/login`,
-      { username, password }
+      `${API_URL}/users/login`,
+      { email, password, role }
     );
     return response.data;
   } catch (error) {
@@ -29,7 +30,7 @@ export const signInToken = async (
 export const refreshToken = async (): Promise<tokenResponseType> => {
   try {
     const response = await axios.post<tokenResponseType>(
-      `${API_URL}/auth/refresh-token`
+      `${API_URL}/users/refresh-token`
     );
     return response.data;
   } catch (error) {
@@ -40,7 +41,7 @@ export const refreshToken = async (): Promise<tokenResponseType> => {
 
 export const clearTokens = async () => {
   try {
-    await axios.post(`${API_URL}/auth/clear-token`);
+    await axios.post(`${API_URL}/users/clear-token`);
   } catch (error) {
     logAxiosError(error, "Token clear");
     throw error;
