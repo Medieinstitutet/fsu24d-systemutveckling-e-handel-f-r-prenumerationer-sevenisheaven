@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 
-const ProductSchema = new Schema({
-    name: {
+const Product = new Schema({
+    product_name: {
         type: String,
         required: true
     },
@@ -9,15 +9,11 @@ const ProductSchema = new Schema({
         type: String,
         required: true
     },
-    price: {
-        type: Schema.Types.Decimal128,
-        required: true
-    },
     stock: {
         type: Number,
         required: true
     },
-    category: {
+    subscription_id: {
         type: String,
         required: true
     },
@@ -27,4 +23,4 @@ const ProductSchema = new Schema({
     }
 })
 
-export default model('products', ProductSchema)
+export default model('products', Product)
