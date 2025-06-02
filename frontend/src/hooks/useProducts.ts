@@ -24,20 +24,20 @@ export const useProducts = () => {
       setProducts(cachedProducts);
       return;
     }
-    fetchAllProductsHandler("", "", 1, 12);
+    fetchAllProductsHandler("", 1, 12);
   }, []);
 
   const fetchAllProductsHandler = async (
-    searchName: string,
-    category: string,
+    subscriptionId: string,
     page: number,
     limit: number
   ) => {
     setLoading(true);
     try {
-      const data = await fetchAllProducts(searchName, category, page, limit);
-      saveToLocalStorage("products", data.products);
-      setProducts(data.products);
+      const data = await fetchAllProducts(subscriptionId, page, limit);
+      
+      saveToLocalStorage("products", data);
+      setProducts(data);
     } catch (error) {
       setError("Failed to fetch products");
     } finally {
@@ -69,7 +69,7 @@ export const useProducts = () => {
       const updatedList = [...products, createdProduct];
       setProducts(updatedList);
       saveToLocalStorage("products", updatedList);
-      await fetchAllProductsHandler("", "", 1, 100);
+      await fetchAllProductsHandler("", 1, 100);
     } catch (error: unknown) {
       setError("Failed to create product");
     } finally {
@@ -90,7 +90,7 @@ export const useProducts = () => {
       const updatedList = products.map((p) => (p._id === id ? updated : p));
       setProducts(updatedList);
       saveToLocalStorage("products", updatedList);
-      await fetchAllProductsHandler("", "", 1, 100);
+      await fetchAllProductsHandler("", 1, 100);
     } catch (error) {
       setError("Failed to update product");
     } finally {

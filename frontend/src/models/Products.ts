@@ -1,27 +1,27 @@
 export type Product = {
   _id: string;
-  name: string;
+  product_name: string;
   description: string;
-  price: number;
   stock: number;
-  category: string;
+  subscription_id: {
+    _id: string;
+    level_name: string;
+  };
   image: string;
 };
 
 export interface IProductCreate {
-  name: string;
+  product_name: string;
   description: string;
-  price: number;
   stock: number;
-  category: string;
+  subscription_id: string;
   image: string;
 }
 
 export interface IProductUpdate {
-  name: string;
+  product_name: string;
   description: string;
-  price: number;
   stock: number;
-  category: string;
+  subscription_id: string;
   image: string;
 }

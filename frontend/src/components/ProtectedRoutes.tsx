@@ -4,11 +4,11 @@ import { useAuth } from "../hooks/useAuth";
 
 
 const ProtectedRoutes = ({ children }: PropsWithChildren) => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/blocked" />;
-  }
+  // if (!user) {
+  //   return <Navigate to="/blocked" />;
+  // }
 
   return children;
 };

@@ -3,21 +3,14 @@ import { api, handleRequest } from "./baseService";
 const PRODUCT_ENDPOINT = "/products";
 
 export const fetchAllProducts = async (
-  searchName: string,
-  category: string,
+  subscriptionId: string,
   page = 1,
   limit: number
 ) => {
   let url = `${PRODUCT_ENDPOINT}?page=${page}&limit=${limit}`;
-  if (category) url += `&category=${category}`;
-  if (searchName) url += `&searchName=${searchName}`;
+  if (subscriptionId) url += `&subscriptionId=${subscriptionId}`;
 
-  return handleRequest<{
-    products: Product[];
-    total: number;
-    page: number;
-    pages: number;
-  }>(api.get(url));
+  return handleRequest<Product[]>(api.get(url));
 };
 
 export const fetchProduct = async (id: string) => {
