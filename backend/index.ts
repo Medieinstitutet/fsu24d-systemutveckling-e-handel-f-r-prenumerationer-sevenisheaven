@@ -5,9 +5,9 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 
-import productsRouter from "./routes/products";
-/* import subscriptionsRouter from "./controllers/subscriptions";
-import usersRouter from "./controllers/users"; */
+import productsRouter from "./routes/products"; 
+import subscriptionsRouter from "./routes/subscription";
+import usersRouter from "./routes/users";
 
 const app = express();
 
@@ -15,8 +15,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/products", productsRouter);
-/* app.use("/users", usersRouter);
-app.use("/subscriptions", subscriptionsRouter); */
+app.use("/users", usersRouter);
+app.use("/subscriptions", subscriptionsRouter);
 
 app.get("/", (_, res) => {
   res.send({ message: "Api running" });

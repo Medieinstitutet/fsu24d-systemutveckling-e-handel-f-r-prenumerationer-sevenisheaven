@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model, Types } from "mongoose";
 
 const Product = new Schema({
     product_name: {
@@ -13,10 +13,11 @@ const Product = new Schema({
         type: Number,
         required: true
     },
-    subscription_id: {
-        type: String,
-        required: true
-    },
+     subscription_id: {
+       type: Types.ObjectId,
+       required: true,
+       ref: "subscriptions",
+     },
     image: {
         type: String,
         required: false

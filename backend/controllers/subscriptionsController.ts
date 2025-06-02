@@ -2,9 +2,7 @@ import { Router, Request, Response } from 'express'
 
 import Subscription from '../models/Subscription'
 
-const r = Router()
-
-r.get('/', async (req: Request, res: Response) => {
+export const getSubscriptions = (async (req: Request, res: Response) => {
     try {
         const subscriptions = await Subscription.find()
         res.json(subscriptions)
@@ -13,7 +11,7 @@ r.get('/', async (req: Request, res: Response) => {
     }
 })
 
-r.get('/:id', async (req: Request, res: Response) => {
+export const getSubscriptionById = ( async (req: Request, res: Response) => {
     try {
         const { id } = req.params
         
@@ -23,5 +21,3 @@ r.get('/:id', async (req: Request, res: Response) => {
         res.status(500).json({ message: error.message })
     }
 })
-
-export default r
