@@ -1,3 +1,4 @@
-export class User {
-  constructor(public email: string) {}
-}
+export type User = {
+  email: string;
+  role: "admin" | "customer"; 
+};

@@ -25,7 +25,7 @@ export const login = async (req, res) => {
     }
 
     const userInfo = {
-      username: user.email,
+      email: user.email,
     };
 
     const refreshToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
@@ -54,7 +54,7 @@ export const login = async (req, res) => {
     });
 
     res.json({
-      user: { username: userInfo.username },
+      user: { email: userInfo.email, role: user.role},
       expires_in: 60 * 15,
       token: accessToken,
     });
@@ -77,7 +77,7 @@ export const refreshToken = async (req, res) => {
       return res.status(403).json({ message: "Invalid token" });
     }
 
-    const userInfo = { username: user.email };
+    const userInfo = { email: user.email };
 
     const newRefreshToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "7d",
@@ -98,7 +98,7 @@ export const refreshToken = async (req, res) => {
     });
 
     res.json({
-      user: { username: userInfo.username },
+      user: { email: userInfo.email },
       expires_in: 60 * 15,
       token: accessToken,
     });
@@ -124,7 +124,7 @@ export const clearToken = async (req: Request, res: Response) => {
 
 export const getUsers = async (req: Request, res: Response) => {
   try { 
-    const user = await User.find().populate('subscription_id');
+    const user = await User.find().populate('subscription_id').populate('user_role_id');
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -135,7 +135,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
 
-    const user = await User.findOne({ email }).populate('subscription_id');
+    const user = await User.findOne({ email }).populate('subscription_id').populate('user_role_id');
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -155,14 +155,26 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (req, res) => {
   try {
     const { email } = req.params;
+    const { password, ...rest } = req.body;
 
-    await User.updateOne({ email: email }, { ...req.body });
+    const updateData: any = { ...rest };
 
-    res.json({ message: `Update User With ${email}` });
-  } catch (error) {
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const result = await User.updateOne({ email }, { $set: updateData });
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: 'User not found or data unchanged' });
+    }
+
+    res.json({ message: `Updated user with email: ${email}` });
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };

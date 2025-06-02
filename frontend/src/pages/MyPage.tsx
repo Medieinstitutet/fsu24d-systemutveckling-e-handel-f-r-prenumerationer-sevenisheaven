@@ -1,7 +1,7 @@
 export const MyPage = () => {
     return (
         <>
-            MtPage
+            My Page
         </>
     )
 }

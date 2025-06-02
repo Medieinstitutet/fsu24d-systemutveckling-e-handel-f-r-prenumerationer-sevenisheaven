@@ -12,12 +12,13 @@ export type tokenResponseType = {
 
 export const signInToken = async (
   email: string,
-  password: string
+  password: string,
+  role: string
 ): Promise<tokenResponseType> => {
   try {
     const response = await axios.post<tokenResponseType>(
       `${API_URL}/users/login`,
-      { email, password }
+      { email, password, role }
     );
     return response.data;
   } catch (error) {

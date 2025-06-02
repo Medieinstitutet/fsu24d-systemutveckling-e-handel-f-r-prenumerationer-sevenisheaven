@@ -48,6 +48,12 @@ const User = new Schema({
     type: String,
     default: "", 
   },
+ role: {
+    type: String,
+    enum: ["admin", "customer"],
+    required: true,
+    default: "customer",
+  },
 });
 
 export default model("users", User);

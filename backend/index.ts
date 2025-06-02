@@ -8,16 +8,18 @@ import cors from "cors";
 import productsRouter from "./routes/products"; 
 import subscriptionsRouter from "./routes/subscription";
 import usersRouter from "./routes/users";
-import roleRouter from "./routes/role";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/products", productsRouter);
 app.use("/users", usersRouter);
-app.use("/roles", roleRouter);
 app.use("/subscriptions", subscriptionsRouter);
 
 app.get("/", (_, res) => {

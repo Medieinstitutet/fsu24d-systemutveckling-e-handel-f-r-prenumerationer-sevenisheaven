@@ -1,9 +1,26 @@
 import { NavLink } from "react-router";
+import { useAuth } from "../hooks/useAuth";
+
 export const Nav = () => {
+  const { user, logout } = useAuth();
+
   return (
     <section id="nav">
-      <NavLink to={"/login"}>Login</NavLink>
-      <NavLink to={"/subscription"}><div id="button-style">Subscription</div></NavLink>
+      {!user ? (
+        <>
+          <NavLink to={"/login"}>Login</NavLink>
+          <NavLink to={"/subscription"}>
+            <div id="button-style">Subscription</div>
+          </NavLink>
+        </>
+      ) : (
+        <>
+          <button onClick={logout}>Logout</button>
+          <NavLink to={"/subscription"}>
+            <div id="button-style">Subscription</div>
+          </NavLink>
+        </>
+      )}
     </section>
   );
 };
