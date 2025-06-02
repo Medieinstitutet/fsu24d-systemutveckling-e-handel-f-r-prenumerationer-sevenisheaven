@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 
 const Subscription = new Schema({
-    name: {
+    level_name: {
         type: String,
         required: true
     }
