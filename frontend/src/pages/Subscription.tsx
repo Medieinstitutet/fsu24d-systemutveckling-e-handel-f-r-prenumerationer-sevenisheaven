@@ -92,13 +92,19 @@ export const Subscription = () => {
           </>
           ) : (
           <>
-            {subscriptions.list.map((subscription) => (
-              <button key={subscription._id} style={{ background: subscription._id === selectedSubscriptionId ? 'orange': 'white' }} onClick={() => setSelectedSubscriptionId(subscription._id)}>
+            {subscriptions.list.map((subscription) => {
+            const isActive = subscription._id === selectedSubscriptionId
+            return (
+              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'orange': 'white' }} onClick={() => {
+                setSelectedSubscriptionId(subscription._id)
+                handleNext()
+                }}>
                 {subscription.level_name}
                 <br />
                 ${subscription.tier}
               </button>
-            ))}
+            )
+            })}
           </>
           )
         )}
