@@ -4,12 +4,17 @@ import { NavLink, Outlet, useNavigate } from "react-router";
 
 import { RenderFooterInfo } from "../components/RenderFooterInfo";
 import { useAuth } from "../hooks/useAuth";
+import { useCart } from "../hooks/useCart";
 
 export const Layout = () => {
   const { user, logout } = useAuth();
+
+  const {emptyHandler} = useCart()
+
   const navigate = useNavigate();
   
    const handleLogout = async () => {
+    emptyHandler()
     await logout();
     navigate("/");
   };
