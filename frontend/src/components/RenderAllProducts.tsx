@@ -1,23 +1,63 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { useSubscriptions } from "../hooks/useSubscriptions";
-import { Star, StarHalf } from "lucide-react";
+import { Star } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useUser } from "../hooks/useUsers";
+import { Product } from "../models/Products";
+import { useCart } from "../hooks/useCart";
+import { ChangeSockPopup } from "./ChangeSockPopup";
 
 export const RenderAllProducts = () => {
+  const { user } = useAuth();
+
   const { products, fetchAllProductsHandler } = useProducts();
+  const { fetchUserByEmailHandler } = useUser();
+  const { cart, addToCartHandler } = useCart();
   const { subscriptions } = useSubscriptions();
+
+
+  const [newSock, setNewSock] = useState<Product>()
+  const [userSubscriptionTier, setUserSubscriptionTier] = useState<number>(0);
+  const [popupTrigger, setPopupTrigger] = useState<boolean>(false)
 
   const [subscriptionName, setSubscriptionName] = useState<string>("");
   const filterBySubscription = async (
-    subscriptionId: string,
+    subscriptionTier: string,
     subscriptionName: string
   ) => {
-    console.log(subscriptionName);
-
     setSubscriptionName(subscriptionName);
-    await fetchAllProductsHandler(subscriptionId, 1, 12);
+    await fetchAllProductsHandler(subscriptionTier, 1, 12);
   };
 
+  const handleProductClick = (productTier: number) => {
+    if (productTier > userSubscriptionTier) {
+      alert("Redirect to subscribe page");
+    }
+  };
+
+  const changeTriggerValue = (value: boolean) => {
+    setPopupTrigger(value)
+  }
+  const handleAddClick = (product: Product) => {
+    if (cart.length >= 1) {
+      setNewSock(product)
+      setPopupTrigger(true)
+    } else {
+      addToCartHandler(product);
+      alert("Added to your weekly sock")
+    }
+  };
+
+  useEffect(() => {
+    const getUserSubscription = async () => {
+      if (user) {
+        const result = await fetchUserByEmailHandler(user?.email);
+        setUserSubscriptionTier(result!.subscription_id.tier);
+      }
+    };
+    getUserSubscription();
+  }, [products]);
   return (
     <>
       <div>
@@ -41,7 +81,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[0]._id,
+                subscriptions[0].tier,
                 subscriptions[0].level_name
               );
             }}
@@ -51,7 +91,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[1]._id,
+                subscriptions[1].tier,
                 subscriptions[1].level_name
               );
             }}
@@ -61,7 +101,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[2]._id,
+                subscriptions[2].tier,
                 subscriptions[2].level_name
               );
             }}
@@ -71,33 +111,23 @@ export const RenderAllProducts = () => {
         </div>
       </div>
 
-      {subscriptionName == "Sock Emergency" ? (
-        <h2>
-          Socks you can choose between in the {subscriptionName} subscription:
-        </h2>
-      ) : subscriptionName == "Sock & Roll" ? (
-        <h2>
-          Socks you can choose between in the {subscriptionName} subscription:
-        </h2>
-      ) : subscriptionName == "Sock Royalty" ? (
-        <h2>
-          Socks you can choose between in the {subscriptionName} subscription:
-        </h2>
+      {subscriptionName !== "" ? (
+        <h2>The {subscriptionName} subscription has access to:</h2>
       ) : (
         <h2>All socks:</h2>
       )}
 
-      <p>
-        Note: När man sorterar på de olika prenumerationerna borde kanske alla
-        strumpor som man kan välja mellan synas.
-        <br />
-        Eller på något annat sätt göra det tydligt att alla strumpor från den
-        föregående leveln ingår i de högre levlarna
-      </p>
-
       <div className="products_list">
         {products.map((p) => (
-          <div className="product_card" key={p._id}>
+          <div
+            className={`product_card ${
+              p.subscription_id.tier > userSubscriptionTier ? "no_access" : ""
+            }`}
+            onClick={() => {
+              handleProductClick(p.subscription_id.tier);
+            }}
+            key={p._id}
+          >
             <img className="product_image" src={p.image} alt="" />
             <div className="product_info">
               <p>{p.product_name}</p>
@@ -113,9 +143,19 @@ export const RenderAllProducts = () => {
                 )}
               </p>
             </div>
+            {p.subscription_id.tier <= userSubscriptionTier && (
+              <button
+                onClick={() => {
+                  handleAddClick(p);
+                }}
+              >
+                Add to weekly sock
+              </button>
+            )}
           </div>
         ))}
       </div>
+      <ChangeSockPopup newSock={newSock!} trigger={popupTrigger} changeTriggerValue={changeTriggerValue}></ChangeSockPopup>
     </>
   );
 };

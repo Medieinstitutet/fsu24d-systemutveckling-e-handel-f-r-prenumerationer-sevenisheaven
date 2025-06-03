@@ -9,7 +9,11 @@ export type Users = {
   city: string;
   street_address: string;
   postal_code: string;
-  subscription_id: string;
+  subscription_id: {
+    _id: string;
+    level_name: string;
+    tier: number;
+  };
   token: string;
 };
 

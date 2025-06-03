@@ -22,6 +22,9 @@ export const Nav = () => {
         <NavLink to="/subscription">
           <div id="button-style">Subscription</div>
         </NavLink>
+        <NavLink to={"/cart"}>
+          <div id="button-style">Your weekly sock</div>
+        </NavLink>
       </section>
     );
   }

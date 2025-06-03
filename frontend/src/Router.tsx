@@ -12,6 +12,7 @@ import { NotFound } from "./pages/NotFound";
 import { Login } from "./pages/Login";
 import { MyPage } from "./pages/MyPage";
 import { Blocked } from "./pages/Blocked";
+import { Cart } from "./pages/Cart";
 
 export const router = createBrowserRouter([
   {
@@ -27,26 +28,27 @@ export const router = createBrowserRouter([
     ],
   },
   {
-  element: (
-    <ProtectedRoutes allowedRoles={["customer"]}>
-      <Layout />
-    </ProtectedRoutes>
-  ),
-  children: [
-    { path: "/products", element: <Products /> },
-    { path: "/products/:id", element: <Product /> },
-    { path: "/my-page", element: <MyPage /> },
-  ],
-},
+    element: (
+      <ProtectedRoutes allowedRoles={["customer"]}>
+        <Layout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      { path: "/products", element: <Products /> },
+      { path: "/products/:id", element: <Product /> },
+      { path: "/my-page", element: <MyPage /> },
+      {path: "/cart", element: <Cart />},
+    ],
+  },
   {
-  element: (
-    <ProtectedRoutes allowedRoles={["admin"]}>
-      <Layout />
-    </ProtectedRoutes>
-  ),
-  children: [
-    { path: "/admin", element: <Admin /> },
-    { path: "/admin/products", element: <AdminProducts /> },
-  ],
-},
+    element: (
+      <ProtectedRoutes allowedRoles={["admin"]}>
+        <Layout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      { path: "/admin", element: <Admin /> },
+      { path: "/admin/products", element: <AdminProducts /> },
+    ],
+  },
 ]);

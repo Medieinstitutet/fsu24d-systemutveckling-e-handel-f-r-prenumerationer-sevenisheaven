@@ -4,6 +4,10 @@ const Subscription = new Schema({
     level_name: {
         type: String,
         required: true
+    },
+    tier: {
+        type: Number,
+        required: true
     }
 })
 
