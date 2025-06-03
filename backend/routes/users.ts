@@ -23,10 +23,10 @@ router.post("/clear-token", clearToken);
 router.get("/me", verifyRefreshToken, getMe);
 
 // Protected user management routes
-router.get("/", verifyAccessToken, getUsers);
-router.get("/:email", verifyAccessToken, getUserByEmail);
-router.post("/", verifyAccessToken, createUser);
-router.patch("/:email", verifyAccessToken, updateUser);
-router.delete("/:email", verifyAccessToken, deleteUser);
+router.get("/", getUsers);
+router.get("/:email", getUserByEmail);
+router.post("/", createUser);
+router.patch("/:email", updateUser);
+router.delete("/:email", deleteUser);
 
 export default router;
