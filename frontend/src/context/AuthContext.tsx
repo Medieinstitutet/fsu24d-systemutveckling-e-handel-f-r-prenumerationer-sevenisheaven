@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, PropsWithChildren, useEffect, useState } from "react";
 import { User } from "../models/User";
 import { API_URL } from "../services/baseService";
 
@@ -16,6 +16,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+   useEffect(() => {
+    refreshToken(); // try to restore session on page load
+  }, []);
+
   
   const login = async (
   email: string, 
@@ -50,10 +55,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   }
 };
 
-  const logout = async () => {
+ const logout = async () => {
   setUser(null);
   try {
-    await fetch(`${API_URL}/users/logout`, {
+    await fetch(`${API_URL}/users/clear-token`, {
       method: "POST",
       credentials: "include",
     });

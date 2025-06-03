@@ -6,6 +6,7 @@ export const Nav = () => {
 
   return (
     <section id="nav">
+      {`${user?.role}:${user?.email}`}
       {!user ? (
         <>
           <NavLink to={"/login"}>Login</NavLink>
