@@ -39,6 +39,10 @@ h3 {
   color: var(--color-black);
 }
 
+h4 {
+  margin: 10px;
+}
+
 
 .main_container {
   display: flex;
@@ -52,6 +56,11 @@ h3 {
 }
 
 /* -- Header -- */
+#loggout{
+position: absolute;
+right: 0;
+margin: 2px;
+}
 
 header {
   display: flex;
@@ -72,10 +81,12 @@ header {
 #nav {
   padding: 10px;
   display: flex;
+  gap: 20px;
   min-width: 300px;
   align-items: center;
   justify-content: space-around;
 }
+
 
 header a {
   color: var(--color-black);

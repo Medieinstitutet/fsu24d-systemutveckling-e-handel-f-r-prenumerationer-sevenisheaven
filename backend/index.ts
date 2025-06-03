@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import cookieParser from "cookie-parser";
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -16,6 +18,7 @@ app.use(cors({
   credentials: true,
 }));
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.use("/products", productsRouter);

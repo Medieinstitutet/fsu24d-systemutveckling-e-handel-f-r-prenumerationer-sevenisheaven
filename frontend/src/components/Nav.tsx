@@ -1,27 +1,38 @@
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export const Nav = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
-  return (
-    <section id="nav">
-      {!user ? (
-        <>
-          <NavLink to={"/login"}>Login</NavLink>
-          <NavLink to={"/subscription"}>
-            <div id="button-style">Subscription</div>
-          </NavLink>
-        </>
-      ) : (
-        <>
-            <button onClick={logout}>Logout</button>
-            <NavLink to={"/products"}>Socks</NavLink>
-          <NavLink to={"/subscription"}>
-            <div id="button-style">Subscription</div>
-          </NavLink>
-        </>
-      )}
-    </section>
-  );
+  if (!user) {
+    return (
+      <section id="nav">
+        <NavLink to="/login">Login</NavLink>
+        <NavLink to="/subscription">
+          <div id="button-style">Subscription</div>
+        </NavLink>
+      </section>
+    );
+  }
+
+  if (user.role === "customer") {
+    return (
+      <section id="nav">
+        <NavLink to="/products">Socks</NavLink>
+        <NavLink to="/subscription">
+          <div id="button-style">Subscription</div>
+        </NavLink>
+      </section>
+    );
+  }
+
+  if (user.role === "admin") {
+    return (
+      <section id="nav">
+        <NavLink to="/admin/products">Products</NavLink>
+        <NavLink to="/users">Users ❌</NavLink>
+        <NavLink to="/subscriptions">Subscriptions ❌</NavLink>
+      </section>
+    );
+  }
 };

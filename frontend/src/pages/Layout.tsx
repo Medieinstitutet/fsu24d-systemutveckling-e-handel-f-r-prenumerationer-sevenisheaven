@@ -1,13 +1,29 @@
 import { Nav } from "../components/Nav";
 import Logo from "../assets/logo.png";
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router";
 
 import { RenderFooterInfo } from "../components/RenderFooterInfo";
+import { useAuth } from "../hooks/useAuth";
 
 export const Layout = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  
+   const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   return (
     <>
       <div className="main_container">
+        {user ? (
+          <>
+            <h4>Logged in {user.role}: {user.email} </h4><button id="loggout" onClick={handleLogout}>Logout</button>
+          </>
+        ) : (
+          ""
+        )}
         <header>
           <NavLink to={"/"}>
             <img id="header-logo" src={Logo} />

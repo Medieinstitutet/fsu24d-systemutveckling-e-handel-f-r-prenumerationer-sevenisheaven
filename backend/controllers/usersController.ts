@@ -82,7 +82,7 @@ export const refreshToken = async (req, res) => {
 
     await User.updateOne({ _id: user._id }, { $set: { token: newRefreshToken } });
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", newRefreshToken, {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -105,6 +105,18 @@ export const refreshToken = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+export const getMe = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { email, role } = req.user;
+
+  res.json({
+    user: { email, role },
+  });
 };
 
 export const clearToken = async (req: Request, res: Response) => {
