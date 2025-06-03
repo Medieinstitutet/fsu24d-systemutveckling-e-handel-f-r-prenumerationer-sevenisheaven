@@ -1,6 +1,7 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { CustomerForm } from "../components/CustomerForm";
 import { useUser } from "../hooks/useUsers";
+import { API_URL } from "../services/baseService";
 
 export const Subscription = () => {
   const { fetchUserByEmailHandler, createUserHandler } = useUser();
@@ -8,6 +9,8 @@ export const Subscription = () => {
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3" | "step-4">(
     "step-1"
   );
+  const [subscriptions, setSubscriptions] = useState<{ loading: boolean; list: Array<{ _id: string; level_name: string; tier: number }> }>({ loading: false, list: [] });
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -20,6 +23,24 @@ export const Subscription = () => {
     postal_code: "",
     subscription_id: "68380992c659b1a48ce18928",
   });
+
+  useEffect(() => {
+    //TODO: MAYBE error handling for failed request or empty array??
+    if (subscriptions.list.length === 0) {
+      setSubscriptions({ list: [], loading: true })
+      fetch(`${API_URL}/subscriptions`).then((r) => r.json()).then(list => {
+        setSubscriptions({ list, loading: false })
+      })
+    }
+  }, [subscriptions])
+
+
+  useEffect(() => {
+    //TODO: MAYBE error handling for failed request or empty array??
+    if (user.subscription_id) {
+      setSelectedSubscriptionId(user.subscription_id)
+    }
+  }, [user])
 
   const handleNext = () => {
     if (step === "step-1") setStep("step-2");
@@ -65,11 +86,21 @@ export const Subscription = () => {
         <h2>{stepHeadings[step]}</h2>
       <h3 className="error">{error}</h3>
         {step === "step-1" && (
+          subscriptions.loading ? (
           <>
-            <h2>1 - Sock Emergency</h2>
-            <h2>2 - Sock & Roll</h2>
-            <h2>3 - Sock Royalty</h2>
+            <h2>Fetching subscriptions...</h2>
           </>
+          ) : (
+          <>
+            {subscriptions.list.map((subscription) => (
+              <button key={subscription._id} style={{ background: subscription._id === selectedSubscriptionId ? 'orange': 'white' }} onClick={() => setSelectedSubscriptionId(subscription._id)}>
+                {subscription.level_name}
+                <br />
+                ${subscription.tier}
+              </button>
+            ))}
+          </>
+          )
         )}
         <>
           {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
