@@ -68,6 +68,7 @@ export const Subscription = () => {
       if (!customer) {
         customer = await createUserHandler(user);
         if (customer) {
+          // TODO: payment+couple between subcription and user
           handleNext();
         } else {
           setError("Failed to create user");
