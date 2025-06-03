@@ -3,12 +3,12 @@ import { api, handleRequest } from "./baseService";
 const PRODUCT_ENDPOINT = "/products";
 
 export const fetchAllProducts = async (
-  subscriptionId: string,
+  subscriptionTier: string,
   page = 1,
   limit: number
 ) => {
   let url = `${PRODUCT_ENDPOINT}?page=${page}&limit=${limit}`;
-  if (subscriptionId) url += `&subscriptionId=${subscriptionId}`;
+  if (subscriptionTier) url += `&subscriptionTier=${subscriptionTier}`;
 
   return handleRequest<Product[]>(api.get(url));
 };

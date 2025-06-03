@@ -28,13 +28,13 @@ export const useProducts = () => {
   }, []);
 
   const fetchAllProductsHandler = async (
-    subscriptionId: string,
+    subscriptionTier: string,
     page: number,
     limit: number
   ) => {
     setLoading(true);
     try {
-      const data = await fetchAllProducts(subscriptionId, page, limit);
+      const data = await fetchAllProducts(subscriptionTier, page, limit);
       
       saveToLocalStorage("products", data);
       setProducts(data);

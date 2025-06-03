@@ -1,21 +1,25 @@
 import { useState } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { useSubscriptions } from "../hooks/useSubscriptions";
-import { Star, StarHalf } from "lucide-react";
+import { Star } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 export const RenderAllProducts = () => {
+  const {user} = useAuth();
+  console.log(user);
+  
   const { products, fetchAllProductsHandler } = useProducts();
   const { subscriptions } = useSubscriptions();
 
   const [subscriptionName, setSubscriptionName] = useState<string>("");
   const filterBySubscription = async (
-    subscriptionId: string,
+    subscriptionTier: string,
     subscriptionName: string
   ) => {
     console.log(subscriptionName);
 
     setSubscriptionName(subscriptionName);
-    await fetchAllProductsHandler(subscriptionId, 1, 12);
+    await fetchAllProductsHandler(subscriptionTier, 1, 12);
   };
 
   return (
@@ -41,7 +45,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[0]._id,
+                subscriptions[0].tier,
                 subscriptions[0].level_name
               );
             }}
@@ -51,7 +55,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[1]._id,
+                subscriptions[1].tier,
                 subscriptions[1].level_name
               );
             }}
@@ -61,7 +65,7 @@ export const RenderAllProducts = () => {
           <button
             onClick={() => {
               filterBySubscription(
-                subscriptions[2]._id,
+                subscriptions[2].tier,
                 subscriptions[2].level_name
               );
             }}

@@ -6,10 +6,6 @@ import { useProducts } from "../hooks/useProducts";
 export const ImageSlider = () => {
   const { products } = useProducts();
 
-  if (products.length > 0) {
-    console.log(products);
-  }
-
   const [index, setIndex] = useState<number>(0);
 
   const slideStyle = {
