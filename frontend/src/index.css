@@ -77,6 +77,7 @@ header {
   justify-content: space-around;
 }
 
+
 header a {
   color: var(--color-black);
   text-decoration: none;
@@ -279,13 +280,13 @@ footer {
 }
 
 .icons,
-#nav a {
+#nav a, #nav button {
   transition: transform 200ms ease-in-out, color 200ms ease-in-out;
   cursor: pointer;
 }
 
 .icons:hover,
-#nav a:hover {
+#nav a:hover, #nav button {
   transform: scale(1.2);
 }
 
