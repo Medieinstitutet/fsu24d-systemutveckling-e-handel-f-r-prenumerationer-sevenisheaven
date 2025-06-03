@@ -61,14 +61,6 @@ export const CreateProducts = ({ onCreate }: CreateProductsProps) => {
             setPayload((prev) => ({ ...prev, stock: Number(e.target.value) }))
           }
         />
-        <input
-          placeholder="Product Description"
-          value={payload.description}
-          onChange={(e) =>
-            setPayload((prev) => ({ ...prev, description: e.target.value }))
-          }
-          required
-        />
         <select
           required
           value={payload.subscription_id}
