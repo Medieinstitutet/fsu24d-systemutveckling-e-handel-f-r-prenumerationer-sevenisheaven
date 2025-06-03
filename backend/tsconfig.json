@@ -1,6 +1,7 @@
 {
   "compileOnSave": true,  
   "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./types"],
     "module": "commonjs",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

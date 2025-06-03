@@ -1,27 +1,32 @@
 import { Router } from "express";
-import { verifyRefreshToken } from "../middleware/auth";
-import { 
+import { verifyAccessToken, verifyRefreshToken } from "../middleware/auth";
+import {
   login,
+  getMe,
   refreshToken,
   clearToken,
-  getUsers, 
-  createUser, 
-  updateUser, 
+  getUsers,
+  createUser,
+  updateUser,
   deleteUser,
-  
-  getUserByEmail
+  getUserByEmail,
 } from "../controllers/usersController";
-  
+
 const router = Router();
 
+// Public routes
 router.post("/login", login);
 router.post("/refresh-token", verifyRefreshToken, refreshToken);
 router.post("/clear-token", clearToken);
 
-router.get("/", getUsers)
-router.get("/:email", getUserByEmail)
-router.post("/", createUser)
-router.patch("/:email", updateUser)
-router.delete("/:email", deleteUser)
+// Authenticated route to get current user
+router.get("/me", verifyRefreshToken, getMe);
 
-export default router
+// Protected user management routes
+router.get("/", verifyAccessToken, getUsers);
+router.get("/:email", verifyAccessToken, getUserByEmail);
+router.post("/", verifyAccessToken, createUser);
+router.patch("/:email", verifyAccessToken, updateUser);
+router.delete("/:email", verifyAccessToken, deleteUser);
+
+export default router;

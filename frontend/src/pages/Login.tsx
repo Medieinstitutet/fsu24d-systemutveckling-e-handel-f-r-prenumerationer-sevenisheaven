@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 
 export const Login = () => {
   const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const [typeOfLogin, setTypeOfLogin] = useState<"customer" | "admin">("customer");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,13 +16,14 @@ const handleSubmit = async (e: React.FormEvent) => {
     await login(email, password, typeOfLogin);
     navigate(typeOfLogin === "customer" ? "/my-page" : "/admin");
   } catch (error) {
-    alert(error instanceof Error ? error.message : "Invalid email or password! Please try again.");
+    setError(error instanceof Error ? error.message : "Invalid email or password! Please try again.");
   }
 };
   
   return (
     <>
       <h2>{typeOfLogin === "customer" ? "User Login" : "Admin Login"}</h2>
+      <h3 className="error">{error}</h3>
       <form onSubmit={handleSubmit}>
         <input
           placeholder="E-mail"
