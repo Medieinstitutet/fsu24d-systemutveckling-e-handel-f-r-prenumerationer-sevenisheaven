@@ -6,6 +6,7 @@ export type Product = {
   subscription_id: {
     _id: string;
     level_name: string;
+    tier: number
   };
   image: string;
 };
