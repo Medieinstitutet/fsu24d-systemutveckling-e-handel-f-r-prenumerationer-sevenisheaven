@@ -6,7 +6,6 @@ export const Cart = () => {
   const { cart } = useContext(CartContext);
 
   const { emptyHandler } = useCart();
-  console.log(cart);
   const handleClick = () => {
     emptyHandler();
   };

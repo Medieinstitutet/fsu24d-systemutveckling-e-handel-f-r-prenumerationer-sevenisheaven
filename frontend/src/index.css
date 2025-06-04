@@ -183,7 +183,7 @@ header a {
   right: 16px;
 }
 
-.change_sock_popup {
+.popup {
   display: flex;
   flex-direction: column;
   align-items: center;

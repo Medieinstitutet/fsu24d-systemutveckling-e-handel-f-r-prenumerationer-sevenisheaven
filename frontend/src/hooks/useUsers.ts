@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { Users, IUserUpdate, IUserCreate } from "../models/Users";
 import {
   createUser,
@@ -23,9 +23,7 @@ export const useUser = () => {
     }
   };
 
-  const createUserHandler = async (
-    payload: IUserCreate
-  ) => {
+  const createUserHandler = async (payload: IUserCreate) => {
     setLoading(true);
     try {
       const newUser = await createUser(payload);
@@ -40,17 +38,13 @@ export const useUser = () => {
     }
   };
 
-  const updateUserHandler = async (
-    e: FormEvent,
-    email: string,
-    userUpdate: IUserUpdate
-  ) => {
+  const updateUserHandler = async (email: string, userUpdate: IUserUpdate) => {
+
     if (!userUpdate) return;
-    e.preventDefault();
     setLoading(true);
     try {
       const updatedUser = await updateUser(email, userUpdate);
-      saveToLocalStorage("customer", updatedUser);
+      saveToLocalStorage("customer", updatedUser); // behövs denna?
     } catch (error) {
       setError("Failed to update Customer");
       console.error(error);
@@ -59,7 +53,6 @@ export const useUser = () => {
       setLoading(false);
     }
   };
-
 
   return {
     createUserHandler,

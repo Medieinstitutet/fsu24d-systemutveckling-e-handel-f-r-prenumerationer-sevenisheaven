@@ -44,7 +44,6 @@ export const getProducts = async (req: Request, res: Response) => {
       ? products.filter((p) => p.subscription_id !== null)
       : products;
 
-    console.log();
 
     res.json(filtered);
   } catch (error) {

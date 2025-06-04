@@ -13,7 +13,7 @@ export type Users = {
     _id: string;
     level_name: string;
     tier: number;
-  };
+  } | null;
   token: string;
 };
 
@@ -31,12 +31,13 @@ export interface IUserCreate {
 }
 
 export interface IUserUpdate {
+  email: string;
   firstname: string;
   lastname: string;
   phone: string;
+  country: string;
+  city: string;
   street_address: string;
   postal_code: string;
-  city: string;
-  country: string;
-  token: string;
+  subscription_id: string | null;
 }
