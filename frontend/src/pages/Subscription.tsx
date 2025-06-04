@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { CustomerForm } from "../components/CustomerForm";
 import { useUser } from "../hooks/useUsers";
+import { OrderConfirmation } from "./OrderConfirmation";
 
 export const Subscription = () => {
   const { fetchUserByEmailHandler, createUserHandler } = useUser();
@@ -73,6 +74,9 @@ export const Subscription = () => {
         )}
         <>
           {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
+        </>
+        <>
+          {step === "step-4" && <OrderConfirmation />}
         </>
         <div className="button-div">
           {step === "step-1" && <button onClick={handleNext}>Next</button>}

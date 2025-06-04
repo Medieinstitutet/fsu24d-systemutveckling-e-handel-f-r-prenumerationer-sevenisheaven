@@ -50,7 +50,9 @@ export const RenderMyPage = () => {
         {isSubscribed ? (
           <div>
             {" "}
-            <button>Change Subscription</button>
+            <Link to={"/subscription"}>
+              <button>Change Subscription</button>
+            </Link>{" "}
             <button onClick={handleUnsubscribeClick}>Unsubscribe</button>
             <UnsubscribePopup
               changeIsSubscribed={changeIsSubscribed}
@@ -64,7 +66,9 @@ export const RenderMyPage = () => {
               You are currently not subscribed to any packages. Limited access
               only.
             </div>
-            <Link to={"/subscription"}><button>Press here to subscribe again</button></Link>
+            <Link to={"/subscription"}>
+              <button>Press here to subscribe again</button>
+            </Link>
           </div>
         )}
       </div>
