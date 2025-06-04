@@ -20,9 +20,14 @@ export interface IProductCreate {
 }
 
 export interface IProductUpdate {
+  _id: string;
   product_name: string;
   description: string;
   stock: number;
-  subscription_id: string;
+  subscription_id: {
+    _id: string;
+    level_name: string;
+    tier: number
+  };
   image: string;
 }

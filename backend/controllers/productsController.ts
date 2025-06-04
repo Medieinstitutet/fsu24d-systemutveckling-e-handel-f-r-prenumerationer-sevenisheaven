@@ -75,7 +75,6 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    //todo: validate body maybe instead?
 
     await Product.updateOne({ _id: id }, { ...req.body });
 
