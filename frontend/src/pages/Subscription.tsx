@@ -10,7 +10,6 @@ export const Subscription = () => {
     "step-1"
   );
   const [subscriptions, setSubscriptions] = useState<{ loading: boolean; list: Array<{ _id: string; level_name: string; tier: number }> }>({ loading: false, list: [] });
-  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<string>('');
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -21,7 +20,7 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: "68380992c659b1a48ce18928",
+    subscription_id: "",
   });
 
   useEffect(() => {
@@ -33,14 +32,6 @@ export const Subscription = () => {
       })
     }
   }, [subscriptions])
-
-
-  useEffect(() => {
-    //TODO: MAYBE error handling for failed request or empty array??
-    if (user.subscription_id) {
-      setSelectedSubscriptionId(user.subscription_id)
-    }
-  }, [user])
 
   const handleNext = () => {
     if (step === "step-1") setStep("step-2");
@@ -94,10 +85,10 @@ export const Subscription = () => {
           ) : (
           <>
             {subscriptions.list.map((subscription) => {
-            const isActive = subscription._id === selectedSubscriptionId
+            const isActive = subscription._id === user.subscription_id
             return (
               <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'orange': 'white' }} onClick={() => {
-                setSelectedSubscriptionId(subscription._id)
+                setUser({ ...user, _id: subscription._id })
                 handleNext()
                 }}>
                 {subscription.level_name}
