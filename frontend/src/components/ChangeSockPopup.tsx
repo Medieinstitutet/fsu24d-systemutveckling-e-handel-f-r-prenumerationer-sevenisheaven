@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
 import { Product } from "../models/Products";
+import { useCart } from "../hooks/useCart";
 
 interface IChangeSockPopupProps {
   trigger: boolean;
@@ -10,6 +11,14 @@ interface IChangeSockPopupProps {
 
 export const ChangeSockPopup = (props: IChangeSockPopupProps) => {
   const { cart } = useContext(CartContext);
+
+  const {addToCartHandler} = useCart()
+
+  const handleChangeConfirm = () => {
+    addToCartHandler(props.newSock)
+    handleClose()
+    alert("sock changed")
+  }
 
   const handleClose = () => {
     props.changeTriggerValue(false);
@@ -23,9 +32,8 @@ export const ChangeSockPopup = (props: IChangeSockPopupProps) => {
               Close
             </button>
             <div>
-              {cart.map((c, i) => (
-                <div key={i}>
-                  {c.product._id === props.newSock._id ? (
+                <div>
+                  {cart!.product._id === props.newSock._id ? (
                     <div>
                       You already have <b>{props.newSock.product_name}</b> as
                       your weekly sock!
@@ -35,19 +43,18 @@ export const ChangeSockPopup = (props: IChangeSockPopupProps) => {
                       <div>
                         <h3>Do you wish to change your weekly sock?</h3>
                         You've currently chosen <b>
-                          {c.product.product_name}
+                          {cart!.product.product_name}
                         </b>{" "}
                         as your weekly sock. Do you wish to change to{" "}
                         <b>{props.newSock.product_name}</b>?
                       </div>
                       <div className="change_sock_popup_buttons">
-                        <button>Confirm</button>
-                        <button>Cancel</button>
+                        <button onClick={() => handleChangeConfirm()}>Confirm</button>
+                        <button onClick={handleClose}>Cancel</button>
                       </div>
                     </div>
                   )}
                 </div>
-              ))}
             </div>
           </div>
         </div>

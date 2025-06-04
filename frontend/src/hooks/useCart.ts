@@ -17,6 +17,7 @@ export const useCart = () => {
     });
   };
 
+
   const emptyHandler = () => {
     localStorage.removeItem("cart");
     cartDispatch({
@@ -28,6 +29,7 @@ export const useCart = () => {
   return {
     cart,
     addToCartHandler,
-    emptyHandler
+    emptyHandler,
+    
   };
 };

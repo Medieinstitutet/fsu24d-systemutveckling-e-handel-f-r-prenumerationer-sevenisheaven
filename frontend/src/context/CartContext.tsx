@@ -3,31 +3,26 @@ import { Cart } from "../models/Cart";
 import { CartReducer, ICartAction } from "../reducers/CartReducer";
 
 export interface ICartContext {
-  cart: Cart[];
+  cart: Cart | null;
   cartDispatch: Dispatch<ICartAction>;
 }
 
 export const CartContext = createContext<ICartContext>({
-  cart: [],
+  cart: null,
   cartDispatch: () => {
     return;
   },
 });
 
-export const CartProvider = ({children}: PropsWithChildren) => {
-  const [cart, cartDispatch] = useReducer(CartReducer, [], () => {
+export const CartProvider = ({ children }: PropsWithChildren) => {
+  const [cart, cartDispatch] = useReducer(CartReducer, {}, () => {
     const cachedCart = localStorage.getItem("cart");
-    return cachedCart ? JSON.parse(cachedCart) : [];
+    return cachedCart ? JSON.parse(cachedCart) : {};
   });
 
   return (
     <CartContext.Provider value={{ cart, cartDispatch }}>
-      {children} 
+      {children}
     </CartContext.Provider>
-  )
-}
-
-
-
-
- 
+  );
+};

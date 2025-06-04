@@ -8,19 +8,25 @@ export const Cart = () => {
   const { emptyHandler } = useCart();
   console.log(cart);
   const handleClick = () => {
-    emptyHandler()
+    emptyHandler();
   };
 
   return (
     <>
       <h2>Your weekly sock:</h2>
-      {cart.map((c, i) => (
-        <div key={i}>
-          <p>{c.product.product_name}</p>
-          <img src={c.product.image} alt="" />
+
+      {cart === null ? (
+        <div>You have not chosen a weekly sock yet!</div>
+      ) : (
+        <div>
+          {" "}
+          <div>
+            <p>{cart.product.product_name}</p>
+            <img src={cart.product.image} alt="" />
+          </div>
+          <button onClick={handleClick}>Remove sock</button>
         </div>
-      ))}
-      <button onClick={handleClick}>Remove sock</button>
+      )}
     </>
   );
 };

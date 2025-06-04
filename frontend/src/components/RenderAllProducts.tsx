@@ -40,7 +40,7 @@ export const RenderAllProducts = () => {
     setPopupTrigger(value)
   }
   const handleAddClick = (product: Product) => {
-    if (cart.length >= 1) {
+    if (cart) {
       setNewSock(product)
       setPopupTrigger(true)
     } else {
