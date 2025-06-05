@@ -1,0 +1,133 @@
+import nodemailer from "nodemailer";
+import { ObjectId } from "mongodb";
+import Stripe from "stripe";
+import dotenv from "dotenv";
+dotenv.config();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+const sendConfirmationEmail = async (user) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: `Subscription Confirmation - ${user.subscription_id}`,
+    text: `Hello! Your order with ID ${user.subscription_idd} has been successfully placed. Thank you for shopping with us!`,
+    html: `
+      <h1>Thank you for your order!</h1>
+      <p>Your order with ID <strong>${user.subscription_id}</strong> has been successfully placed and is being processed.</p>
+      <p>We will notify you once your order is shipped.</p>
+      <p>Thank you for shopping with us!</p>
+      <h2>THIS IS JUST A TEST!</h2>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Confirmation email sent successfully");
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+  }
+};
+
+export const checkoutSessionEmbedded = async (req, res) => {
+  try {
+    const { user } = req.body;
+    console.log("Incoming user:", user);
+
+    const priceLookup = {
+      "68380950c659b1a48ce18927": "price_1RWKJlFC5bkJD5ptYDKSLaOB",
+      "68380992c659b1a48ce18928": "price_1RWKKfFC5bkJD5ptmCpERpx7",
+      "683809b3c659b1a48ce18929": "price_1RWKPqFC5bkJD5ptwepxVk8e",
+    };
+
+    const selectedPrice = priceLookup[user.subscription_id];
+    if (!selectedPrice)
+      return res.status(400).json({ error: "Invalid plan ID" });
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      ui_mode: "embedded",
+      line_items: [
+        {
+          price: selectedPrice,
+          quantity: 1,
+        },
+      ],
+      client_reference_id: user.subscription_id,
+      customer_email: user.email,
+      return_url: `http://localhost:5173/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+    });
+
+    res.json({ clientSecret: session.client_secret });
+  } catch (error) {
+    console.error("Stripe session creation error:", error);
+    res.status(500).json({ error: "Failed to create checkout session" });
+  }
+};
+
+/* 
+export const webhook = async (req, res) => {
+  const event = req.body;
+
+  try {
+    if (event.type === "checkout.session.completed") {
+      const session = await stripe.checkout.sessions.retrieve(
+        event.data.object.id,
+        {
+          expand: ["line_items.data.price.product"],
+        }
+      );
+
+      const orderId = session.client_reference_id;
+      const paymentId = session.id;
+      const customerEmail = session.customer_email;
+
+      const lineItems = session.line_items.data.map((item) => ({
+        productId: item.price.product.metadata.productId,
+        quantity: item.quantity,
+      }));
+
+      await ordersCollection.updateOne(
+        { _id: new ObjectId(orderId) },
+        {
+          $set: {
+            payment_status: "Paid",
+            payment_id: paymentId,
+            order_status: "Received",
+          },
+        }
+      );
+
+      await sendConfirmationEmail(customerEmail, orderId);
+
+      const bulkOperations = lineItems.map((item) => ({
+        updateOne: {
+          filter: { _id: new ObjectId(item.productId) },
+          update: { $inc: { stock: -item.quantity } },
+        },
+      }));
+
+      if (bulkOperations.length > 0) {
+        await productsCollection.bulkWrite(bulkOperations);
+      }
+
+      console.log("Order updated and stock adjusted.");
+    } else {
+      console.log(`Unhandled event type: ${event.type}`);
+    }
+
+    res.json({ received: true });
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(400).send(`Webhook Error: ${error.message}`);
+  }
+};
+ */

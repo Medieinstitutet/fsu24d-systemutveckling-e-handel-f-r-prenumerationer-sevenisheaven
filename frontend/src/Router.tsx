@@ -13,6 +13,7 @@ import { Login } from "./pages/Login";
 import { MyPage } from "./pages/MyPage";
 import { Blocked } from "./pages/Blocked";
 import { Cart } from "./pages/Cart";
+import { OrderConfirmation } from "./pages/OrderConfirmation";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
       { path: "/blocked", element: <Blocked /> },
       { path: "/login", element: <Login /> },
       { path: "/subscription", element: <Subscription /> },
-      /* { path: "/order-confirmation", element: <OrderConfirmation /> }, */
+      { path: "/order-confirmation", element: <OrderConfirmation /> },
     ],
   },
   {
