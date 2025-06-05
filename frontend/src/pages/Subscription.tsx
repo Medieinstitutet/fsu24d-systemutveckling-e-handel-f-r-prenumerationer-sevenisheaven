@@ -7,6 +7,7 @@ export const Subscription = () => {
   const { fetchUserByEmailHandler, createUserHandler } = useUser();
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3">("step-1");
+  const [subscription, setSubscription] = useState("");
 
   const [user, setUser] = useState({
     email: "",
@@ -18,7 +19,6 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: "",
   });
 
   const handleNext = () => {
@@ -69,7 +69,7 @@ export const Subscription = () => {
         <div className="subscriptions">
           <button
             onClick={() => {
-              setUser({ ...user, subscription_id: "68380950c659b1a48ce18927" });
+              setSubscription("68380950c659b1a48ce18927");
               handleNext();
             }}
           >
@@ -77,7 +77,7 @@ export const Subscription = () => {
           </button>
           <button
             onClick={() => {
-              setUser({ ...user, subscription_id: "68380992c659b1a48ce18928" });
+              setSubscription("68380992c659b1a48ce18928");
               handleNext();
             }}
           >
@@ -85,7 +85,7 @@ export const Subscription = () => {
           </button>
           <button
             onClick={() => {
-              setUser({ ...user, subscription_id: "683809b3c659b1a48ce18929" });
+              setSubscription("683809b3c659b1a48ce18929");
               handleNext();
             }}
           >
@@ -95,7 +95,7 @@ export const Subscription = () => {
       )}
 
       {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
-      {step === "step-3" && <StripeSub user={user} />}
+      {step === "step-3" && <StripeSub user={user} subscription={subscription} />}
 
       <div className="button-div">
         {step !== "step-1" && <button onClick={handleBack}>Previous</button>}

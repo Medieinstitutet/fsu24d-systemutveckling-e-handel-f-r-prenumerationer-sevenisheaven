@@ -14,13 +14,15 @@ interface StripeSubProps {
         street_address: string;
         postal_code: string;
     };
+  
+  subscription: string
 }
 
 const stripePromise = loadStripe(
   "pk_test_51R4J42FC5bkJD5ptsh8bU6weX4xSsF5tjxfu6MWEq94xMRkgYaR8fQElp6frJV7S9rayfnvQiLj5ciRNTQ3HkTY900xsSe1vCC"
 );
 
-export const StripeSub = ({ user }: StripeSubProps) => {
+export const StripeSub = ({ user, subscription }: StripeSubProps) => {
     const [clientSecret, setClientSecret] = useState<string | null>(null);
 
     useEffect(() => {
@@ -35,7 +37,7 @@ export const StripeSub = ({ user }: StripeSubProps) => {
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ user }),
+                        body: JSON.stringify({ user,subscription }),
                     }
                 );
               const data = await response.json();

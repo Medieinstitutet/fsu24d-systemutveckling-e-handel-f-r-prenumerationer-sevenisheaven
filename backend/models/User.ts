@@ -41,14 +41,15 @@ const User = new Schema({
   },
   subscription_id: {
     type: Types.ObjectId,
-    required: false,
     ref: "subscriptions",
+    required: false,
+    default: null,
   },
   token: {
     type: String,
-    default: "", 
+    default: "",
   },
- role: {
+  role: {
     type: String,
     enum: ["admin", "customer"],
     required: true,

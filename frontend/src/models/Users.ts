@@ -27,7 +27,6 @@ export interface IUserCreate {
   city: string;
   street_address: string;
   postal_code: string;
-  subscription_id: string;
 }
 
 export interface IUserUpdate {
