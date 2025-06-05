@@ -41,7 +41,7 @@ export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user } = req.body;
     console.log("Incoming user:", user);
-
+      
     const priceLookup = {
       "68380950c659b1a48ce18927": "price_1RWKJlFC5bkJD5ptYDKSLaOB",
       "68380992c659b1a48ce18928": "price_1RWKKfFC5bkJD5ptmCpERpx7",
@@ -61,7 +61,6 @@ export const checkoutSessionEmbedded = async (req, res) => {
           quantity: 1,
         },
       ],
-      client_reference_id: user.subscription_id,
       customer_email: user.email,
       return_url: `http://localhost:5173/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
     });
@@ -70,6 +69,24 @@ export const checkoutSessionEmbedded = async (req, res) => {
   } catch (error) {
     console.error("Stripe session creation error:", error);
     res.status(500).json({ error: "Failed to create checkout session" });
+  }
+};
+
+export const getSession = async (req, res) => {
+  const sessionId = req.params.sessionId;
+
+  if (!sessionId) {
+    return res.status(400).json({ error: "Missing session ID" });
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    res.json({
+      email: session.customer_email,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 

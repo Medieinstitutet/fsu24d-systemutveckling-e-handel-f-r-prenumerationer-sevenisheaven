@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { UnsubscribePopup } from "./UnsubscribePopup";
 import { useAuth } from "../hooks/useAuth";
-import { useUser } from "../hooks/useUsers";
+import { useUser } from "../hooks/useUser";
 import { Users } from "../models/Users";
 import { Link } from "react-router";
 

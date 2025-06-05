@@ -1,7 +1,41 @@
 import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useUser } from "../hooks/useUser";
 
 export const OrderConfirmation = () => {
-  const getStarColor = (level?: string) => {
+  const [sessionData, setSessionData] = useState({email:""});
+  const { user, fetchUserByEmailHandler } = useUser();
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+
+      if (!sessionId) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/stripe/sessions/${sessionId}`
+        );
+        const data = await response.json();
+        setSessionData(data);
+      } catch (error) {
+        console.error("Failed to fetch session data:", error);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  useEffect(() => {
+    if (sessionData?.email) {
+      fetchUserByEmailHandler(sessionData.email);
+    }
+  }, [sessionData]);
+
+  let level = user?.subscription_id?.level_name
+
+  const getStarColor = (level:string) => {
     switch (level) {
       case "Sock Emergency":
         return "#CD7F32";
@@ -10,22 +44,30 @@ export const OrderConfirmation = () => {
       case "Sock Royalty":
         return "#FFD700";
       default:
-        return "#cccccc"; // fallback
+        return "#cccccc";
     }
   };
+
   return (
     <>
-      <h1>Order Confirmation</h1>
-      <h3>Thank You! {/* ${user.name} */}</h3>
-      <h3>
-        You have subscription {/* ${user.level} */}{" "}
-        <Star fill={getStarColor(/* levelName */)} />
-      </h3>
+      <h1>Subscription Confirmation</h1>
+      {!sessionData || !user ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+            <h2>Thank You, {user.firstname} {user.lastname}!</h2>
+          <h3>
+              You have subscription: <strong>{level}</strong> <Star fill={getStarColor(level)} />
+          </h3>
+        </>
+      )}
       <p className="centered-p-element">
         You will receive a confirmation email with all the details about your
         new subscription. You can now log in with your email and password to
-        order your first pair of TCS Socks. At any time, you can cancel,
-        downgrade, or upgrade your subscription. To do so, simply log in to your
+        order your first pair of TCS Socks.
+        <br />
+        At any time, you can cancel,
+        downgrade or upgrade your subscription. To do so, simply log in to your
         account.
       </p>
     </>
