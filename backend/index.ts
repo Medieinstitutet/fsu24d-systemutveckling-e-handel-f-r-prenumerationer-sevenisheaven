@@ -47,9 +47,6 @@ const connect = async () => {
     console.error("MongoDB connection failed:", err);
   }
 
-  let sendEmail = (email:string) => {
-    console.log("send", email)
-  }
 /* 
   setInterval(async () => {
   try {

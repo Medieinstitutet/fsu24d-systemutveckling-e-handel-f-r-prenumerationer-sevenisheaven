@@ -61,11 +61,7 @@ export const checkoutSessionEmbedded = async (req, res) => {
         },
       ],
       customer_email: user.email,
-      subscription_data: {
-        metadata: {
-          local_subscription_id: subscription,
-        },
-      },
+      client_reference_id: subscription,
       return_url: `http://localhost:5173/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
     });
 
@@ -100,15 +96,13 @@ export const webhook = async (req, res) => {
     if (event.type === "checkout.session.completed") {
       const session = await stripe.checkout.sessions.retrieve(event.data.object.id);
       const customerEmail = session.customer_email;
-      const subscriptionId = session.subscription;
+      const subscriptionId = session.client_reference_id;
 
-      // Update the user in the database
       await User.updateOne(
         { email: customerEmail },
         { $set: { subscription_id: subscriptionId } }
       );
 
-      // Retrieve user to send email
       const user = await User.findOne({ email: customerEmail });
       if (user) {
         await sendConfirmationEmail(user);
