@@ -97,7 +97,7 @@ export const Subscription = () => {
             {subscriptions.list.map((subscription) => {
             const isActive = subscription._id === user.subscription_id
             return (
-              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'orange': 'white', cursor: 'pointer' }} onClick={() => {
+              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'lightgreen': 'white' }} onClick={() => {
                 setUser({ ...user, subscription_id: subscription._id })
                 handleNext()
                 }}>
@@ -114,7 +114,7 @@ export const Subscription = () => {
           {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
         </>
         <div className="button-div">
-          {step === "step-1" && <button onClick={handleNext}>Next</button>}
+          {step === "step-1" && user.subscription_id && <button onClick={handleNext}>Next</button>}
           {step === "step-2" && <button onClick={handleBack}>Previous</button>}
           {step === "step-2" && (
             <button
