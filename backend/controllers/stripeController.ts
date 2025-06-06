@@ -42,9 +42,9 @@ export const checkoutSessionEmbedded = async (req, res) => {
     console.log("Incoming user:", user, subscription);
 
     const priceLookup = {
-      "68380950c659b1a48ce18927": "price_1RWKJlFC5bkJD5ptYDKSLaOB",
-      "68380992c659b1a48ce18928": "price_1RWKKfFC5bkJD5ptmCpERpx7",
-      "683809b3c659b1a48ce18929": "price_1RWKPqFC5bkJD5ptwepxVk8e",
+      "68380950c659b1a48ce18927": "price_1RWKJlFC5bkJD5ptYDKSLaOB", // DINA PRODUKTER
+      "68380992c659b1a48ce18928": "price_1RWKKfFC5bkJD5ptmCpERpx7", // DINA PRODUKTER
+      "683809b3c659b1a48ce18929": "price_1RWKPqFC5bkJD5ptwepxVk8e", // DINA PRODUKTER
     };
 
     const selectedPrice = priceLookup[subscription];
