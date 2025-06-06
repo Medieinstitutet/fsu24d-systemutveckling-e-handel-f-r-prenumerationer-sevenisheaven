@@ -4,7 +4,7 @@ import { useUser } from "../hooks/useUsers";
 import { API_URL } from "../services/baseService";
 
 export const Subscription = () => {
-  const { fetchUserByEmailHandler, createUserHandler } = useUser();
+  const { fetchUserByEmailHandler, createUserHandler, user: contextUser } = useUser();
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3" | "step-4">(
     "step-1"
@@ -20,21 +20,30 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: "",
+    subscription_id: contextUser?.subscription_id._id || "",
   });
 
   useEffect(() => {
     //TODO: MAYBE error handling for failed request or empty array??
-    if (subscriptions.list.length === 0) {
+    if (subscriptions.list.length === 0 && !subscriptions.loading) {
       setSubscriptions({ list: [], loading: true })
       fetch(`${API_URL}/subscriptions`).then((r) => r.json()).then(list => {
         setSubscriptions({ list, loading: false })
+      }).catch(() => {
+        alert('Something went wrong!')
       })
     }
   }, [subscriptions])
 
   const handleNext = () => {
-    if (step === "step-1") setStep("step-2");
+    if (step === "step-1") {
+      if (contextUser) {
+        // TODO: SHOULD WE AT LEAST TO A PUT REQUEST HERE IN CASE THE USER HAS A NEW SUBSCRIPTION??
+        setStep("step-3");
+      } else {
+        setStep("step-2");
+      }
+    }
     else if (step === "step-2") setStep("step-3");
     else if (step === "step-3") setStep("step-4");
   };
@@ -83,12 +92,12 @@ export const Subscription = () => {
             <h2>Fetching subscriptions...</h2>
           </>
           ) : (
-          <>
+          <center style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             {subscriptions.list.map((subscription) => {
             const isActive = subscription._id === user.subscription_id
             return (
-              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'orange': 'white' }} onClick={() => {
-                setUser({ ...user, _id: subscription._id })
+              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'orange': 'white', cursor: 'pointer' }} onClick={() => {
+                setUser({ ...user, subscription_id: subscription._id })
                 handleNext()
                 }}>
                 {subscription.level_name}
@@ -97,7 +106,7 @@ export const Subscription = () => {
               </button>
             )
             })}
-          </>
+          </center>
           )
         )}
         <>
