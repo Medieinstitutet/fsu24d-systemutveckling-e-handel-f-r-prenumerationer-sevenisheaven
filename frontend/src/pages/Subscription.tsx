@@ -4,7 +4,7 @@ import { useUser } from "../hooks/useUsers";
 import { API_URL } from "../services/baseService";
 
 export const Subscription = () => {
-  const { fetchUserByEmailHandler, createUserHandler, user: contextUser } = useUser();
+  const { fetchUserByEmailHandler, createUserHandler, updateUserHandler, user: contextUser } = useUser();
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3" | "step-4">(
     "step-1"
@@ -38,7 +38,8 @@ export const Subscription = () => {
   const handleNext = () => {
     if (step === "step-1") {
       if (contextUser) {
-        // TODO: SHOULD WE AT LEAST TO A PUT REQUEST HERE IN CASE THE USER HAS A NEW SUBSCRIPTION??
+        // TODO: SHOULD THIS UPDATE BE DONE AFTER PAYMENT INSTEAD MAYBE?
+        updateUserHandler(contextUser.email, { subscription_id: user.subscription_id })
         setStep("step-3");
       } else {
         setStep("step-2");

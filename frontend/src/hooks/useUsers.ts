@@ -41,12 +41,10 @@ export const useUser = () => {
   };
 
   const updateUserHandler = async (
-    e: FormEvent,
     email: string,
     userUpdate: IUserUpdate
   ) => {
     if (!userUpdate) return;
-    e.preventDefault();
     setLoading(true);
     try {
       const updatedUser = await updateUser(email, userUpdate);

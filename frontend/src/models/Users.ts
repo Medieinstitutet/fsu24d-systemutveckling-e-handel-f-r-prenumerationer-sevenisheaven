@@ -31,12 +31,13 @@ export interface IUserCreate {
 }
 
 export interface IUserUpdate {
-  firstname: string;
-  lastname: string;
-  phone: string;
-  street_address: string;
-  postal_code: string;
-  city: string;
-  country: string;
-  token: string;
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
+  street_address?: string;
+  postal_code?: string;
+  city?: string;
+  country?: string;
+  token?: string;
+  subscription_id?: string;
 }
