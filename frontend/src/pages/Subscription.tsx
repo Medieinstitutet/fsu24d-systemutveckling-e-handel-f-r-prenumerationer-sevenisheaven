@@ -35,11 +35,11 @@ export const Subscription = () => {
     }
   }, [subscriptions])
 
-  const handleNext = () => {
+  const handleNext = (userExists = false) => {
     if (step === "step-1") {
-      if (contextUser) {
+      if (userExists) {
         // TODO: SHOULD THIS UPDATE BE DONE AFTER PAYMENT INSTEAD MAYBE?
-        updateUserHandler(contextUser.email, { subscription_id: user.subscription_id })
+        updateUserHandler(contextUser?.email || user?.email, { subscription_id: user.subscription_id })
         setStep("step-3");
       } else {
         setStep("step-2");
@@ -70,7 +70,7 @@ export const Subscription = () => {
         customer = await createUserHandler(user);
         if (customer) {
           // TODO: payment+couple between subcription and user
-          handleNext();
+          handleNext(true);
         } else {
           setError("Failed to create user");
         }
@@ -99,7 +99,7 @@ export const Subscription = () => {
             return (
               <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'lightgreen': 'white' }} onClick={() => {
                 setUser({ ...user, subscription_id: subscription._id })
-                handleNext()
+                handleNext(!!contextUser) //booleanify
                 }}>
                 {subscription.level_name}
                 <br />
@@ -114,7 +114,7 @@ export const Subscription = () => {
           {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
         </>
         <div className="button-div">
-          {step === "step-1" && user.subscription_id && <button onClick={handleNext}>Next</button>}
+          {step === "step-1" && user.subscription_id && <button onClick={() => handleNext(!!contextUser)}>Next</button>}
           {step === "step-2" && <button onClick={handleBack}>Previous</button>}
           {step === "step-2" && (
             <button
