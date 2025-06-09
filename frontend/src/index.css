@@ -80,7 +80,6 @@ header {
   justify-content: space-around;
 }
 
-
 header a {
   color: var(--color-black);
   text-decoration: none;
@@ -92,11 +91,48 @@ header a {
 #button-style {
   padding: 10px;
   background-color: var(--color-accent);
-  border: 1.5px solid var(--color-black);
+  border: 1px solid var(--color-black);
   border-radius: 10px;
 }
 
 /* -- Main --  */
+
+.subscriptions {
+display: flex;
+flex-direction: column;
+max-width: 700px;
+margin: auto;
+gap: 20px;
+}
+
+.subscriptions button {
+padding: 0;
+}
+
+.subscription {
+min-height: 120px;
+background-image: linear-gradient(
+  to right,
+  var(--color-white) 0%,
+  var(--color-white) 50%,
+  var(--color-accent) 70%,
+  var(--color-accent) 100%
+);
+display: grid;
+border-radius: 5px;
+grid-template-columns: 1fr 1fr;
+}
+
+.price-div {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.level-div {
+  padding: 10px;
+}
 /* -- Products List --  */
 
 .sort_by_subscription {
