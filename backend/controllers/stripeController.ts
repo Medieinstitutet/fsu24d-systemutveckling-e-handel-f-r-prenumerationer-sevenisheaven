@@ -36,6 +36,35 @@ const sendConfirmationEmail = async (user) => {
   }
 };
 
+const sendMissedPaymentMail = async (user, url) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: `Missed Payment`,
+    text: `Hello ${user.firstname}, There was a problem with your latest payment`,
+    html: `
+      <h1>Pay your remaining balance here, ${url}!</h1>
+      <p>Your subscription will be terminated otherwise</p>
+      <h2>THIS IS JUST A TEST!</h2>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Confirmation email sent successfully");
+  } catch (error) {
+    console.error("Error sending confirmation email:", error);
+  }
+};
+
 export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user, subscription } = req.body;
@@ -108,7 +137,21 @@ export const webhook = async (req, res) => {
         await sendConfirmationEmail(user);
       }
 
-    } else {
+    }
+    /* if (event.type === "invocie.payment_succeeded") {
+      //reset set interval 
+    } */
+    if (event.type === "invocie.payment_failed") {
+      const invocie = await stripe.invoices.retrieve(event.data.object.id);
+      const customerEmail = invocie.customer_email;
+      const url = invocie.hosted_invoice_url;
+      const user = await User.findOne({ email: customerEmail });
+      if (user) {
+        await sendMissedPaymentMail(user, url);
+      }
+      //Setinterval, subscription_id = null 
+    }
+      else {
       console.log(`Unhandled event type: ${event.type}`);
     }
 
