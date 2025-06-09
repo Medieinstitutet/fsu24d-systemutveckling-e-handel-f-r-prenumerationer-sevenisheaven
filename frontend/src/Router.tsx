@@ -14,6 +14,7 @@ import { MyPage } from "./pages/MyPage";
 import { Blocked } from "./pages/Blocked";
 import { Cart } from "./pages/Cart";
 import { OrderConfirmation } from "./pages/OrderConfirmation";
+import { ChangeSubscription } from "./components/ChangeSubscription";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "/products/:id", element: <Product /> },
       { path: "/my-page", element: <MyPage /> },
       {path: "/cart", element: <Cart />},
+      {path: "/change_subscription", element: <ChangeSubscription />},
     ],
   },
   {

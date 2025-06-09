@@ -50,7 +50,7 @@ export const RenderMyPage = () => {
         {isSubscribed ? (
           <div>
             {" "}
-            <Link to={"/subscription"}>
+            <Link to={"/change_subscription"}>
               <button>Change Subscription</button>
             </Link>{" "}
             <button onClick={handleUnsubscribeClick}>Unsubscribe</button>
