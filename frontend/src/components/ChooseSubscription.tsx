@@ -18,9 +18,22 @@ export const ChooseSubscription = ({
     <>
       <section className="subscriptions">
         {subscriptions.map((s) => (
-          <div key={s._id}>
-            {JSON.stringify(s, null, 4)}
-          </div>
+          <button
+          key={s._id}
+          onClick={() => {
+            setSubscription(s._id);
+            handleNext();
+          }}
+          >
+            <div className="subscription">
+              <div className="level-div">
+                <h4>{s.level_name}</h4>
+              </div>
+              <div className="price-div">
+                <h1 style={{ fontSize: "2.5rem" }}>{s.tier} €</h1>
+              </div>
+            </div>
+          </button>
         ))}
       </section>
     </>
