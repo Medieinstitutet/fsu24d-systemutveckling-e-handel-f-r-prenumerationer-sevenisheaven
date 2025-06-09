@@ -2,6 +2,8 @@ import SockEmergency from "../assets/sock_emergency.png";
 import SockRoll from "../assets/sock&roll.png";
 import SockRoyalty from "../assets/sock_royalty.png";
 
+import { useSubscriptions } from "../hooks/useSubscriptions";
+
 interface ChooseSubscriptionProps {
   setSubscription: React.Dispatch<React.SetStateAction<string>>;
   handleNext: () => void;
@@ -10,6 +12,20 @@ export const ChooseSubscription = ({
   setSubscription,
   handleNext,
 }: ChooseSubscriptionProps) => {
+  const { subscriptions } = useSubscriptions();
+
+  return (
+    <>
+      <section className="subscriptions">
+        {subscriptions.map((s) => (
+          <div key={s._id}>
+            {JSON.stringify(s, null, 4)}
+          </div>
+        ))}
+      </section>
+    </>
+  )
+
   return (
     <>
       <section className="subscriptions">
