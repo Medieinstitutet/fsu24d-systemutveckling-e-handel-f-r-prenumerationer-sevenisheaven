@@ -19,7 +19,6 @@ export const Nav = () => {
     return (
       <section id="nav">
         <NavLink to="/products">Socks</NavLink>
-        <NavLink to="/my-page">My Page</NavLink>
         <NavLink to="/subscription">
           <div id="button-style">Subscription</div>
         </NavLink>
