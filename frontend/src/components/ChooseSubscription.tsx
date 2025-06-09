@@ -5,10 +5,12 @@ import SockRoyalty from "../assets/sock_royalty.png";
 import { useSubscriptions } from "../hooks/useSubscriptions";
 
 interface ChooseSubscriptionProps {
+  subscription: string;
   setSubscription: React.Dispatch<React.SetStateAction<string>>;
   handleNext: () => void;
 }
 export const ChooseSubscription = ({
+  subscription,
   setSubscription,
   handleNext,
 }: ChooseSubscriptionProps) => {
@@ -19,6 +21,8 @@ export const ChooseSubscription = ({
       <section className="subscriptions">
         {subscriptions.map((s) => (
           <button
+          disabled={s._id === subscription}
+          style={{ opacity: s._id === subscription ? 0.5 : 1 }}
           key={s._id}
           onClick={() => {
             setSubscription(s._id);

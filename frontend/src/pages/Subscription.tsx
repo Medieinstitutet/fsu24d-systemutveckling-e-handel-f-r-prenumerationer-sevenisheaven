@@ -57,7 +57,7 @@ export const Subscription = () => {
     <div className="container">
       <h2>{stepHeadings[step]}</h2>
       {error && <h3 className="error">{error}</h3>}
-      {step === "step-1" && <ChooseSubscription setSubscription={setSubscription} handleNext={handleNext} />}
+      {step === "step-1" && <ChooseSubscription subscription={subscription} setSubscription={setSubscription} handleNext={handleNext} />}
       {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
       {step === "step-3" && <StripeSub user={user} subscription={subscription} />}
 
