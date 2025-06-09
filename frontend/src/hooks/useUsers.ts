@@ -39,7 +39,6 @@ export const useUser = () => {
   };
 
   const updateUserHandler = async (email: string, userUpdate: IUserUpdate) => {
-
     if (!userUpdate) return;
     setLoading(true);
     try {

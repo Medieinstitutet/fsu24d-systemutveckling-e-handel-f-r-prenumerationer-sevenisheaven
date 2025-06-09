@@ -1,14 +1,16 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { CustomerForm } from "../components/CustomerForm";
 import { useUser } from "../hooks/useUsers";
+import { API_URL } from "../services/baseService";
 import { OrderConfirmation } from "./OrderConfirmation";
 
 export const Subscription = () => {
-  const { fetchUserByEmailHandler, createUserHandler } = useUser();
+  const { fetchUserByEmailHandler, createUserHandler, updateUserHandler, user: contextUser } = useUser();
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3" | "step-4">(
     "step-1"
   );
+  const [subscriptions, setSubscriptions] = useState<{ loading: boolean; list: Array<{ _id: string; level_name: string; tier: number }> }>({ loading: false, list: [] });
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -19,11 +21,31 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: "68380992c659b1a48ce18928",
+    subscription_id: contextUser?.subscription_id._id || "",
   });
 
-  const handleNext = () => {
-    if (step === "step-1") setStep("step-2");
+  useEffect(() => {
+    //TODO: MAYBE error handling for failed request or empty array??
+    if (subscriptions.list.length === 0 && !subscriptions.loading) {
+      setSubscriptions({ list: [], loading: true })
+      fetch(`${API_URL}/subscriptions`).then((r) => r.json()).then(list => {
+        setSubscriptions({ list, loading: false })
+      }).catch(() => {
+        alert('Something went wrong!')
+      })
+    }
+  }, [subscriptions])
+
+  const handleNext = (userExists = false) => {
+    if (step === "step-1") {
+      if (userExists) {
+        // TODO: SHOULD THIS UPDATE BE DONE AFTER PAYMENT INSTEAD MAYBE?
+        updateUserHandler(contextUser?.email || user?.email, { subscription_id: user.subscription_id })
+        setStep("step-3");
+      } else {
+        setStep("step-2");
+      }
+    }
     else if (step === "step-2") setStep("step-3");
     else if (step === "step-3") setStep("step-4");
   };
@@ -48,7 +70,8 @@ export const Subscription = () => {
       if (!customer) {
         customer = await createUserHandler(user);
         if (customer) {
-          handleNext();
+          // TODO: payment+couple between subcription and user
+          handleNext(true);
         } else {
           setError("Failed to create user");
         }
@@ -66,11 +89,27 @@ export const Subscription = () => {
         <h2>{stepHeadings[step]}</h2>
       <h3 className="error">{error}</h3>
         {step === "step-1" && (
+          subscriptions.loading ? (
           <>
-            <h2>1 - Sock Emergency</h2>
-            <h2>2 - Sock & Roll</h2>
-            <h2>3 - Sock Royalty</h2>
+            <h2>Fetching subscriptions...</h2>
           </>
+          ) : (
+          <center style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+            {subscriptions.list.map((subscription) => {
+            const isActive = subscription._id === user.subscription_id
+            return (
+              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'lightgreen': 'white' }} onClick={() => {
+                setUser({ ...user, subscription_id: subscription._id })
+                handleNext(!!contextUser) //booleanify
+                }}>
+                {subscription.level_name}
+                <br />
+                ${subscription.tier}
+              </button>
+            )
+            })}
+          </center>
+          )
         )}
         <>
           {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
@@ -79,7 +118,7 @@ export const Subscription = () => {
           {step === "step-4" && <OrderConfirmation />}
         </>
         <div className="button-div">
-          {step === "step-1" && <button onClick={handleNext}>Next</button>}
+          {step === "step-1" && user.subscription_id && <button onClick={() => handleNext(!!contextUser)}>Next</button>}
           {step === "step-2" && <button onClick={handleBack}>Previous</button>}
           {step === "step-2" && (
             <button
