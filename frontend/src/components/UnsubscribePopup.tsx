@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useUser } from "../hooks/useUsers";
+import { useUser } from "../hooks/useUser";
 import { useAuth } from "../hooks/useAuth";
 import { IUserUpdate, Users } from "../models/Users";
 
@@ -27,7 +27,7 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
     try {
       await updateUserHandler(user!.email, unsubscribedUser);
       props.changeIsSubscribed(false);
-      props.changeTriggerValue(false); 
+      props.changeTriggerValue(false);
     } catch (err) {
       console.error("Unsubscribe failed:", err);
     }

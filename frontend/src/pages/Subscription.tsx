@@ -1,16 +1,15 @@
 import { FormEvent, useEffect, useState } from "react";
 import { CustomerForm } from "../components/CustomerForm";
-import { useUser } from "../hooks/useUsers";
-import { API_URL } from "../services/baseService";
-import { OrderConfirmation } from "./OrderConfirmation";
+import { useUser } from "../hooks/useUser";
+import { StripeSub } from "../components/StripeSub";
+import { ChooseSubscription } from "../components/ChooseSubscription";
 
 export const Subscription = () => {
-  const { fetchUserByEmailHandler, createUserHandler, updateUserHandler, user: contextUser } = useUser();
+  const { fetchUserByEmailHandler } = useUser();
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<"step-1" | "step-2" | "step-3" | "step-4">(
-    "step-1"
-  );
-  const [subscriptions, setSubscriptions] = useState<{ loading: boolean; list: Array<{ _id: string; level_name: string; tier: number }> }>({ loading: false, list: [] });
+  const [step, setStep] = useState<"step-1" | "step-2" | "step-3">("step-1");
+  const [subscription, setSubscription] = useState("");
+
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -21,117 +20,52 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: contextUser?.subscription_id._id || "",
   });
 
-  useEffect(() => {
-    //TODO: MAYBE error handling for failed request or empty array??
-    if (subscriptions.list.length === 0 && !subscriptions.loading) {
-      setSubscriptions({ list: [], loading: true })
-      fetch(`${API_URL}/subscriptions`).then((r) => r.json()).then(list => {
-        setSubscriptions({ list, loading: false })
-      }).catch(() => {
-        alert('Something went wrong!')
-      })
-    }
-  }, [subscriptions])
-
-  const handleNext = (userExists = false) => {
-    if (step === "step-1") {
-      if (userExists) {
-        // TODO: SHOULD THIS UPDATE BE DONE AFTER PAYMENT INSTEAD MAYBE?
-        updateUserHandler(contextUser?.email || user?.email, { subscription_id: user.subscription_id })
-        setStep("step-3");
-      } else {
-        setStep("step-2");
-      }
-    }
-    else if (step === "step-2") setStep("step-3");
-    else if (step === "step-3") setStep("step-4");
+  const handleNext = () => {
+    setStep((prev) => (prev === "step-1" ? "step-2" : "step-3"));
   };
 
   const handleBack = () => {
-    if (step === "step-4") setStep("step-3");
-    else if (step === "step-3") setStep("step-2");
-    else if (step === "step-2") setStep("step-1");
+    setStep((prev) => (prev === "step-3" ? "step-2" : "step-1"));
   };
 
   const stepHeadings: Record<string, string> = {
     "step-1": "Choose Subscription",
     "step-2": "Fill In User Information",
     "step-3": "Stripe Integration",
-    "step-4": "Order Confirmation",
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+
     try {
-      let customer = await fetchUserByEmailHandler(user.email);
-      if (!customer) {
-        customer = await createUserHandler(user);
-        if (customer) {
-          // TODO: payment+couple between subcription and user
-          handleNext(true);
-        } else {
-          setError("Failed to create user");
-        }
+      const customer = await fetchUserByEmailHandler(user.email);
+      if (customer) {
+        setError("E-postadressen är redan registrerad.");
       } else {
-        setError("Email is already in use");
+        handleNext();
       }
-    } catch (error) {
-      console.error("Error processing checkout:", error);
+    } catch (err) {
+      console.error("Fel vid användarverifiering:", err);
+      setError("Något gick fel. Försök igen senare.");
     }
   };
 
   return (
-    <>
-      <div className="container">
-        <h2>{stepHeadings[step]}</h2>
-      <h3 className="error">{error}</h3>
-        {step === "step-1" && (
-          subscriptions.loading ? (
-          <>
-            <h2>Fetching subscriptions...</h2>
-          </>
-          ) : (
-          <center style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-            {subscriptions.list.map((subscription) => {
-            const isActive = subscription._id === user.subscription_id
-            return (
-              <button key={subscription._id} disabled={isActive} style={{ background: isActive ? 'lightgreen': 'white' }} onClick={() => {
-                setUser({ ...user, subscription_id: subscription._id })
-                handleNext(!!contextUser) //booleanify
-                }}>
-                {subscription.level_name}
-                <br />
-                ${subscription.tier}
-              </button>
-            )
-            })}
-          </center>
-          )
-        )}
-        <>
-          {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
-        </>
-        <>
-          {step === "step-4" && <OrderConfirmation />}
-        </>
-        <div className="button-div">
-          {step === "step-1" && user.subscription_id && <button onClick={() => handleNext(!!contextUser)}>Next</button>}
-          {step === "step-2" && <button onClick={handleBack}>Previous</button>}
-          {step === "step-2" && (
-            <button
-              onClick={(e) => {
-                handleSubmit(e);
-                setError("")
-              }}
-            >
-              Checkout
-            </button>
-          )}
-        </div>
+    <div className="container">
+      <h2>{stepHeadings[step]}</h2>
+      {error && <h3 className="error">{error}</h3>}
+      {step === "step-1" && <ChooseSubscription setSubscription={setSubscription} handleNext={handleNext} />}
+      {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
+      {step === "step-3" && <StripeSub user={user} subscription={subscription} />}
+
+      <div className="button-div">
+        {step !== "step-1" && <button onClick={handleBack}>Previous</button>}
+        {step === "step-1" && <button onClick={handleNext}>Next</button>}
+        {step === "step-2" && <button onClick={handleSubmit}>Checkout</button>}
       </div>
-    </>
+    </div>
   );
 };

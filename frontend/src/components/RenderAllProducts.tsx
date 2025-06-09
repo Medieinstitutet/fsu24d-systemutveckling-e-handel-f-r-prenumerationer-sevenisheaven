@@ -3,7 +3,7 @@ import { useProducts } from "../hooks/useProducts";
 import { useSubscriptions } from "../hooks/useSubscriptions";
 import { Star } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import { useUser } from "../hooks/useUsers";
+import { useUser } from "../hooks/useUser";
 import { Product } from "../models/Products";
 import { useCart } from "../hooks/useCart";
 import { ChangeSockPopup } from "./ChangeSockPopup";

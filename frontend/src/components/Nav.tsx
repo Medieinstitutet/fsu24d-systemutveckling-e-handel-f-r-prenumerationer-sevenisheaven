@@ -18,9 +18,7 @@ export const Nav = () => {
   if (user.role === "customer") {
     return (
       <section id="nav">
-        <NavLink to="/my-page">My page</NavLink>
         <NavLink to="/products">Socks</NavLink>
-        <NavLink to="/my-page">My Page</NavLink>
         <NavLink to="/subscription">
           <div id="button-style">Subscription</div>
         </NavLink>

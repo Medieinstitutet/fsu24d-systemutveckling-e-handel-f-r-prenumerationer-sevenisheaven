@@ -9,6 +9,8 @@ export type Users = {
   city: string;
   street_address: string;
   postal_code: string;
+  stripe_subscription_id: string;
+  subscription_status: string;
   subscription_id: {
     _id: string;
     level_name: string;
@@ -27,7 +29,6 @@ export interface IUserCreate {
   city: string;
   street_address: string;
   postal_code: string;
-  subscription_id: string;
 }
 
 export interface IUserUpdate {

@@ -40,16 +40,27 @@ const User = new Schema({
     required: true,
   },
   subscription_id: {
-    type: Types.ObjectId || null,
-    required: true,
+    type: Types.ObjectId,
     ref: "subscriptions",
-    default: () => new Types.ObjectId("68380950c659b1a48ce18927"),
+    required: false,
+    default: null,
   },
+  stripe_subscription_id: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  subscription_status: {
+    type: String,
+    required: false,
+    default: null,
+  },
+
   token: {
     type: String,
-    default: "", 
+    default: "",
   },
- role: {
+  role: {
     type: String,
     enum: ["admin", "customer"],
     required: true,

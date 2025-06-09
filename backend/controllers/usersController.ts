@@ -162,8 +162,12 @@ export const createUser = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const data = { ...rest, password: hashedPassword };
 
-    await User.create(data);
-    res.json({ message: "Created User" });
+    const createdUser = await User.create(data);
+
+    // Skicka tillbaka användaren utan lösenord
+    const { password: _, ...userWithoutPassword } = createdUser.toObject();
+
+    res.json({ user: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -172,14 +176,14 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req, res) => {
   try {
     const { email } = req.params;
-    const { password, ...rest } = req.body; //denna kanske ta bort?
+    const { password, ...rest } = req.body; 
 
     const updateData: any = { ...rest };
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
-    } //denna med isåfall
+    } 
 
     const result = await User.updateOne({ email }, { $set: updateData });
 

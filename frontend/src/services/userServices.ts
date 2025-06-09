@@ -7,7 +7,10 @@ export const fetchUserByEmail = async (email: string) => {
 };
 
 export const createUser = async (payload: IUserCreate) => {
-  return handleRequest<Users>(api.post(USERS_ENDPOINT, payload));
+  const response = await handleRequest<{ user: Users }>(
+    api.post(USERS_ENDPOINT, payload)
+  );
+  return response.user;
 };
 
 export const updateUser = async (email: string, payload: IUserUpdate) => {
