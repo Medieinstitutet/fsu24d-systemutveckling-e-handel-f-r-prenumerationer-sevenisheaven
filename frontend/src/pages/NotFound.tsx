@@ -1,7 +1,7 @@
 export const NotFound = () => {
     return (
         <>
-            NotFound
+            <h1 className="error">Page Not Found Return To Previous Page</h1>
         </>
     )
 }

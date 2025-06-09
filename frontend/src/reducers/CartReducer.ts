@@ -11,15 +11,14 @@ export enum ICartActionType {
   EMPTIED,
 }
 
-export const CartReducer = (cartState: Cart[], action: ICartAction): Cart[] => {
+export const CartReducer = (cartState: Cart | null, action: ICartAction): Cart | null => {
   switch (action.type) {
     case ICartActionType.ADDED: {
       const p: Product = JSON.parse(action.payload);
-      return [...cartState, new Cart(p)];
+      return new Cart(p);
     }
     case ICartActionType.EMPTIED: {
-      return [];
+      return null;
     }
   }
-  return cartState;
 };

@@ -16,10 +16,12 @@ export const RenderAllProducts = () => {
   const { cart, addToCartHandler } = useCart();
   const { subscriptions } = useSubscriptions();
 
-
-  const [newSock, setNewSock] = useState<Product>()
-  const [userSubscriptionTier, setUserSubscriptionTier] = useState<number>(0);
-  const [popupTrigger, setPopupTrigger] = useState<boolean>(false)
+  const [newSock, setNewSock] = useState<Product>();
+  const [userSubscriptionTier, setUserSubscriptionTier] = useState<
+    number | null
+  >(null);
+  const [popupTrigger, setPopupTrigger] = useState<boolean>(false);
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
 
   const [subscriptionName, setSubscriptionName] = useState<string>("");
   const filterBySubscription = async (
@@ -31,21 +33,21 @@ export const RenderAllProducts = () => {
   };
 
   const handleProductClick = (productTier: number) => {
-    if (productTier > userSubscriptionTier) {
+    if (userSubscriptionTier === null || productTier > userSubscriptionTier) {
       alert("Redirect to subscribe page");
     }
   };
 
   const changeTriggerValue = (value: boolean) => {
-    setPopupTrigger(value)
-  }
+    setPopupTrigger(value);
+  };
   const handleAddClick = (product: Product) => {
-    if (cart.length >= 1) {
-      setNewSock(product)
-      setPopupTrigger(true)
+    if (cart) {
+      setNewSock(product);
+      setPopupTrigger(true);
     } else {
       addToCartHandler(product);
-      alert("Added to your weekly sock")
+      alert("Added to your weekly sock");
     }
   };
 
@@ -53,63 +55,67 @@ export const RenderAllProducts = () => {
     const getUserSubscription = async () => {
       if (user) {
         const result = await fetchUserByEmailHandler(user?.email);
-        setUserSubscriptionTier(result!.subscription_id.tier);
+        if (result && result.subscription_id) {
+          setUserSubscriptionTier(result.subscription_id.tier);
+        }
       }
     };
     getUserSubscription();
-  }, [products]);
+  }, []);
+
+  useEffect(() => {
+    setIsSubscribed(!!userSubscriptionTier);
+  }, [userSubscriptionTier]);
   return (
     <>
-      <div>
-        <Star fill="#CD7F32"></Star>
-      </div>
-      <div>
-        <Star fill="#C0C0C0"></Star>
-      </div>
-      <div>
-        <Star fill="#FFD700 "></Star>
-      </div>
-      <div className="sort_by_subscription">
-        <div className="subscription_buttons">
-          <button
-            onClick={() => {
-              filterBySubscription("", "");
-            }}
-          >
-            All socks
-          </button>
-          <button
-            onClick={() => {
-              filterBySubscription(
-                subscriptions[0].tier,
-                subscriptions[0].level_name
-              );
-            }}
-          >
-            Sock Emergency <Star fill="#CD7F32"></Star>
-          </button>
-          <button
-            onClick={() => {
-              filterBySubscription(
-                subscriptions[1].tier,
-                subscriptions[1].level_name
-              );
-            }}
-          >
-            Sock & Roll <Star fill="#C0C0C0"></Star>
-          </button>
-          <button
-            onClick={() => {
-              filterBySubscription(
-                subscriptions[2].tier,
-                subscriptions[2].level_name
-              );
-            }}
-          >
-            Sock Royalty <Star fill="#FFD700 "></Star>
-          </button>
+      {!isSubscribed ? (
+        <h3>
+          You are currently not subscribed to any of our packages. Please
+          subscribe for full access to our services.
+        </h3>
+      ) : (
+        <div className="sort_by_subscription">
+          <div className="subscription_buttons">
+            <button
+              onClick={() => {
+                filterBySubscription("", "");
+              }}
+            >
+              All socks
+            </button>
+            <button
+              onClick={() => {
+                filterBySubscription(
+                  subscriptions[0].tier,
+                  subscriptions[0].level_name
+                );
+              }}
+            >
+              Sock Emergency <Star fill="#CD7F32"></Star>
+            </button>
+            <button
+              onClick={() => {
+                filterBySubscription(
+                  subscriptions[1].tier,
+                  subscriptions[1].level_name
+                );
+              }}
+            >
+              Sock & Roll <Star fill="#C0C0C0"></Star>
+            </button>
+            <button
+              onClick={() => {
+                filterBySubscription(
+                  subscriptions[2].tier,
+                  subscriptions[2].level_name
+                );
+              }}
+            >
+              Sock Royalty <Star fill="#FFD700 "></Star>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {subscriptionName !== "" ? (
         <h2>The {subscriptionName} subscription has access to:</h2>
@@ -121,7 +127,7 @@ export const RenderAllProducts = () => {
         {products.map((p) => (
           <div
             className={`product_card ${
-              p.subscription_id.tier > userSubscriptionTier ? "no_access" : ""
+              p.subscription_id.tier > userSubscriptionTier! ? "no_access" : ""
             }`}
             onClick={() => {
               handleProductClick(p.subscription_id.tier);
@@ -143,7 +149,7 @@ export const RenderAllProducts = () => {
                 )}
               </p>
             </div>
-            {p.subscription_id.tier <= userSubscriptionTier && (
+            {p.subscription_id.tier <= userSubscriptionTier! && (
               <button
                 onClick={() => {
                   handleAddClick(p);
@@ -155,7 +161,11 @@ export const RenderAllProducts = () => {
           </div>
         ))}
       </div>
-      <ChangeSockPopup newSock={newSock!} trigger={popupTrigger} changeTriggerValue={changeTriggerValue}></ChangeSockPopup>
+      <ChangeSockPopup
+        newSock={newSock!}
+        trigger={popupTrigger}
+        changeTriggerValue={changeTriggerValue}
+      ></ChangeSockPopup>
     </>
   );
 };

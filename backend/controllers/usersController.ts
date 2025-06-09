@@ -6,14 +6,14 @@ import User from "../models/User";
 
 let ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
-export const login = async (req, res) => { 
+export const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: "Missing username or password" });
   }
 
-    try {
+  try {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -29,29 +29,29 @@ export const login = async (req, res) => {
     const refreshToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "7d",
     });
-      
-      await User.updateOne(
-  { email: user.email },
-  {
-    $set: {
-      token: refreshToken,
-    },
-  }
-);
-      
+
+    await User.updateOne(
+      { email: user.email },
+      {
+        $set: {
+          token: refreshToken,
+        },
+      }
+    );
+
     res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  maxAge: 1000 * 60 * 60 * 24 * 7,
-});
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
 
     const accessToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
     });
 
     res.json({
-      user: { email: userInfo.email, role: user.role},
+      user: { email: userInfo.email, role: user.role },
       expires_in: 60 * 15,
       token: accessToken,
     });
@@ -80,28 +80,30 @@ export const refreshToken = async (req, res) => {
       expiresIn: "7d",
     });
 
-    await User.updateOne({ _id: user._id }, { $set: { token: newRefreshToken } });
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { token: newRefreshToken } }
+    );
 
     res.cookie("refreshToken", newRefreshToken, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  maxAge: 1000 * 60 * 60 * 24 * 7,
-});
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
 
     const accessToken = jwt.sign(userInfo, ACCESS_TOKEN_SECRET, {
       expiresIn: "15m",
     });
 
-   res.json({
-  user: {
-    email: user.email,
-    role: user.role,
-  },
-  expires_in: 60 * 15,
-  token: accessToken,
-   });
-    
+    res.json({
+      user: {
+        email: user.email,
+        role: user.role,
+      },
+      expires_in: 60 * 15,
+      token: accessToken,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -135,8 +137,8 @@ export const clearToken = async (req: Request, res: Response) => {
 };
 
 export const getUsers = async (req: Request, res: Response) => {
-  try { 
-    const user = await User.find().populate('subscription_id');
+  try {
+    const user = await User.find().populate("subscription_id");
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -147,7 +149,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
 
-    const user = await User.findOne({ email }).populate('subscription_id');
+    const user = await User.findOne({ email }).populate("subscription_id");
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -170,19 +172,21 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req, res) => {
   try {
     const { email } = req.params;
-    const { password, ...rest } = req.body;
+    const { password, ...rest } = req.body; //denna kanske ta bort?
 
     const updateData: any = { ...rest };
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
-    }
+    } //denna med isåfall
 
     const result = await User.updateOne({ email }, { $set: updateData });
 
     if (result.modifiedCount === 0) {
-      return res.status(404).json({ message: 'User not found or data unchanged' });
+      return res
+        .status(404)
+        .json({ message: "User not found or data unchanged" });
     }
 
     res.json({ message: `Updated user with email: ${email}` });

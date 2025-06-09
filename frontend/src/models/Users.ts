@@ -13,7 +13,7 @@ export type Users = {
     _id: string;
     level_name: string;
     tier: number;
-  };
+  } | null;
   token: string;
 };
 
