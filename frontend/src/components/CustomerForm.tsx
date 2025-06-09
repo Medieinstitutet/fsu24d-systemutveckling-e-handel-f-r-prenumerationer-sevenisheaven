@@ -10,7 +10,7 @@ interface CustomerFormProps {
     country: string;
     city: string;
     street_address: string;
-   postal_code: string;
+    postal_code: string;
   };
   setUser: React.Dispatch<React.SetStateAction<any>>;
 }

@@ -65,55 +65,57 @@ const sendMissedPaymentMail = async (user, url) => {
   }
 };
 
-export const checkoutSessionEmbedded = async (req, res) => {
+export const paymentIntent = async (req, res) => {
+  const { user, subscription } = req.body;
+
+  const priceLookup = {
+    "68380950c659b1a48ce18927": 1499,
+    "68380992c659b1a48ce18928": 1699,
+    "683809b3c659b1a48ce18929": 1899,
+  };
+
+  const selectedAmount = priceLookup[subscription];
+  if (!selectedAmount)
+    return res.status(400).json({ error: "Invalid plan ID" });
+
   try {
-    const { user, subscription } = req.body;
-    console.log("Incoming user:", user, subscription);
-
-    const priceLookup = {
-      "68380950c659b1a48ce18927": process.env.PRODUCT_1, 
-      "68380992c659b1a48ce18928": process.env.PRODUCT_2,
-      "683809b3c659b1a48ce18929": process.env.PRODUCT_3,
-    };
-
-    const selectedPrice = priceLookup[subscription];
-    if (!selectedPrice)
-      return res.status(400).json({ error: "Invalid plan ID" });
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      ui_mode: "embedded",
-      line_items: [
-        {
-          price: selectedPrice,
-          quantity: 1,
-        },
-      ],
-      customer_email: user.email,
-      client_reference_id: subscription,
-      return_url: `http://localhost:5173/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: selectedAmount,
+      currency: "eur",
+      description: `Subscription: ${subscription}`,
+      automatic_payment_methods: {
+        enabled: true
+      },
+      metadata: {
+        email: user.email,
+        subscription,
+      },
     });
 
-    res.json({ clientSecret: session.client_secret });
-  } catch (error) {
-    console.error("Stripe session creation error:", error);
-    res.status(500).json({ error: "Failed to create checkout session" });
+    res.send({ clientSecret: paymentIntent.client_secret });
+  } catch (error: any) {
+    console.error("Stripe error:", error.message);
+    res.status(500).send({ error: error.message });
   }
 };
 
-export const getSession = async (req, res) => {
-  const sessionId = req.params.sessionId;
+export const getPaymentIntent = async (req, res) => {
+  const { id } = req.params;
 
-  if (!sessionId) {
-    return res.status(400).json({ error: "Missing session ID" });
+  if (!id) {
+    return res.status(400).json({ error: "Missing PaymentIntent ID" });
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const intent = await stripe.paymentIntents.retrieve(id);
+
     res.json({
-      email: session.customer_email,
+      status: intent.status,
+      amount: intent.amount,
+      currency: intent.currency,
+      email: intent.metadata?.email,
     });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
@@ -122,7 +124,7 @@ export const webhook = async (req, res) => {
   const event = req.body;
 
   try {
-    if (event.type === "checkout.session.completed") {
+    if (event.type === "payment_intent.succeeded") {
       const session = await stripe.checkout.sessions.retrieve(event.data.object.id);
       const customerEmail = session.customer_email;
       const subscriptionId = session.client_reference_id;
@@ -141,7 +143,7 @@ export const webhook = async (req, res) => {
     /* if (event.type === "invocie.payment_succeeded") {
       //reset set interval 
     } */
-    if (event.type === "invocie.payment_failed") {
+    if (event.type === "payment_intent.payment_failed") {
       const invocie = await stripe.invoices.retrieve(event.data.object.id);
       const customerEmail = invocie.customer_email;
       const url = invocie.hosted_invoice_url;
