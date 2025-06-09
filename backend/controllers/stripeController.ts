@@ -47,11 +47,11 @@ const sendFailureEmail = async (user, hostedInvoiceUrl) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: user.email,
-    subject: `Subscription Payment Failure - ${user.subscription_id}`,
-    text: `Hello ${user.firstname}, your order with ID ${user.subscription_id} could not be paid.`,
+    subject: `Missed Payment`,
+    text: `Hello ${user.firstname}, There was a problem with your latest payment`,
     html: `
-      <h1>Payment failed, ${user.firstname}!</h1>
-      <p>Your order with ID <strong>${user.subscription_id}</strong> could not be processed. Please try again here: ${hostedInvoiceUrl} </p>
+      <h1>Pay your remaining balance here, ${hostedInvoiceUrl}!</h1>
+      <p>Your subscription will be terminated otherwise</p>
       <h2>THIS IS JUST A TEST!</h2>
     `,
   };
