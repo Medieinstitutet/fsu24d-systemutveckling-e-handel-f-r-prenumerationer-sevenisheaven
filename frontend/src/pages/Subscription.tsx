@@ -20,7 +20,7 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
-    subscription_id: "",
+    subscription_id: null,
   });
 
   const handleNext = () => {

@@ -199,7 +199,7 @@ export const resumeSubscription = async (req: Request, res: Response) => {
     { email },
     {
       $set: {
-        subscription_status: null,
+        subscription_status: "payment_successfull",
         subscription_ends_at: null,
       },
     }
