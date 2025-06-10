@@ -16,7 +16,13 @@ import BackgroundTask from "../backend/models/BackgroundTask";
 const app = express();
 
 app.use(cors({
-  origin: "*",
+  // origin: "*", 
+  // fick felmeddelande när jag loggade in:
+  // Cross-Origin Request Blocked: The Same Origin Policy disallows reading 
+  // the remote resource at ‘http://localhost:3000/users/login’. 
+  // (Reason: Credential is not supported if the CORS header ‘Access-Control-Allow-Origin’ is ‘*’).
+  
+  origin: 'http://localhost:5173',
   credentials: true,
 }));
 

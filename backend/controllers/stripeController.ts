@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import User from "../models/User";
+import {Request, Response} from "express";
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -64,36 +65,7 @@ const sendFailureEmail = async (user, hostedInvoiceUrl) => {
   }
 };
 
-const sendMissedPaymentMail = async (user, url) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: `Missed Payment`,
-    text: `Hello ${user.firstname}, There was a problem with your latest payment`,
-    html: `
-      <h1>Pay your remaining balance here, ${url}!</h1>
-      <p>Your subscription will be terminated otherwise</p>
-      <h2>THIS IS JUST A TEST!</h2>
-    `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Confirmation email sent successfully");
-  } catch (error) {
-    console.error("Error sending confirmation email:", error);
-  }
-};
-
-export const checkoutSessionEmbedded = async (req, res) => {
+export const checkoutSessionEmbedded = async (req: Request, res: Response) => {
   try {
     const { user, subscription } = req.body;
     console.log("Incoming user:", user, subscription);
@@ -130,7 +102,7 @@ export const checkoutSessionEmbedded = async (req, res) => {
   }
 };
 
-export const updateSubscription = async (req, res) => {
+export const updateSubscription = async (req: Request, res: Response) => {
   const { currentStripeSubscriptionId, subscriptionId, email } = req.body;
 
   const priceLookup = {
@@ -169,7 +141,6 @@ export const updateSubscription = async (req, res) => {
     }
   );
 
-  console.log(updatedSub);
 
   res.json({
     success: true,
@@ -177,7 +148,7 @@ export const updateSubscription = async (req, res) => {
   });
 };
 
-export const getSession = async (req, res) => {
+export const getSession = async (req: Request, res: Response) => {
   const sessionId = req.params.sessionId;
 
   if (!sessionId) {
@@ -194,7 +165,7 @@ export const getSession = async (req, res) => {
   }
 };
 
-export const webhook = async (req, res) => {
+export const webhook = async (req: Request, res: Response) => {
   const event = req.body;
 
   try {

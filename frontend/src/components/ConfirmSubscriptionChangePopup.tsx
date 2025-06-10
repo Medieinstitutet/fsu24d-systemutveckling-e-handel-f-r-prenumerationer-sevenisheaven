@@ -1,15 +1,25 @@
+import { useEffect, useState } from "react";
 import { Users } from "../models/Users";
+import { Link } from "react-router";
 
 interface IConfirmSubscriptionChangePopupProps {
   user: Users;
   subscriptionId: string;
   trigger: boolean;
   changeTriggerValue: (value: boolean) => void;
+  newSubscription: Users["subscription_id"];
 }
 
 export const ConfirmSubscriptionChangePopup = (
   props: IConfirmSubscriptionChangePopupProps
 ) => {
+  const [isChangeSuccessful, setIsChangeSuccessful] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  useEffect(() => {
+    setIsLoading(false);
+    setIsChangeSuccessful(false);
+  }, []);
+
   const handleClose = () => {
     props.changeTriggerValue(false);
   };
@@ -17,6 +27,8 @@ export const ConfirmSubscriptionChangePopup = (
   const handleConfirm = () => {
     const changeSubscription = async () => {
       try {
+        setIsLoading(true);
+
         const response = await fetch(
           "http://localhost:3000/stripe/update-subscription",
           {
@@ -31,9 +43,11 @@ export const ConfirmSubscriptionChangePopup = (
             }),
           }
         );
-        const data = await response.json();
+        await response.json();
+
         if (response) {
-          handleClose();
+          setIsLoading(false);
+          setIsChangeSuccessful(true);
         }
       } catch (error) {
         console.error("Error fetching client secret:", error);
@@ -44,7 +58,15 @@ export const ConfirmSubscriptionChangePopup = (
   };
   return (
     <>
-      {props.trigger ? (
+      {isLoading ? (
+        <div className="popup">
+          <div className="popup_inner">
+            <div>
+              <div>Loading.....</div>
+            </div>
+          </div>
+        </div>
+      ) : props.trigger && !isChangeSuccessful ? (
         <div className="popup">
           <div className="popup_inner">
             <button onClick={handleClose} className="close_btn">
@@ -52,10 +74,27 @@ export const ConfirmSubscriptionChangePopup = (
             </button>
             <div>
               <div>
-                You are about to change your subscription to "new subscription
-                name". You will be billed immediatly Do you wish to proceed? 
+                <p>
+                  You are about to change your subscription to{" "}
+                  <b>{props.newSubscription?.level_name}</b>. You will be billed
+                  immediatly. Do you wish to proceed?
+                </p>{" "}
                 <button onClick={handleConfirm}>Confirm</button>
               </div>
+            </div>
+          </div>
+        </div>
+      ) : props.trigger && isChangeSuccessful ? (
+        <div className="popup">
+          <div className="popup_inner">
+            <div>
+              <div>
+                Successfully changed subscription to{" "}
+                <b>{props.newSubscription?.level_name}!</b>
+              </div>
+              <Link to={"/my-page"}>
+                <button>Back to my page</button>
+              </Link>{" "}
             </div>
           </div>
         </div>
