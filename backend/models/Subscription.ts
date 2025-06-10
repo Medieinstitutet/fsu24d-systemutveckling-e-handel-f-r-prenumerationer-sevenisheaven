@@ -8,7 +8,11 @@ const Subscription = new Schema({
     tier: {
         type: Number,
         required: true
-    }
+    },
+    price: {
+        type: Number,
+        required: true
+    },
 })
 
 export default model('subscriptions', Subscription)
