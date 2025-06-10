@@ -22,7 +22,7 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
   const confirmUnsubscribe = async () => {
     if (!userToUpdate) return;
     try {
-      await fetch(
+      const response = await fetch(
         "http://localhost:3000/stripe/cancel-subscription",
         {
           method: "POST",
@@ -31,10 +31,12 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
           },
           body: JSON.stringify({
             subscriptionId: userToUpdate.stripe_subscription_id,
-            email: userToUpdate.email
+            email: userToUpdate.email,
           }),
         }
       );
+      const data = await response.json()
+      console.log(data);
       props.changeIsSubscribed(false);
       props.changeTriggerValue(false);
     } catch (err) {

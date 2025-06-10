@@ -164,18 +164,46 @@ export const getSession = async (req, res) => {
 export const cancelSubscription = async (req: Request, res: Response) => {
   const { subscriptionId, email } = req.body;
 
-  await User.updateOne(
-    { email },
-    { $set: { subscription_status: "canceled" } }
-  );
-
   const canceledSubscription = await stripe.subscriptions.update(
     subscriptionId,
     {
       cancel_at_period_end: true,
     }
   );
-  console.log(canceledSubscription);
+
+  const endTimestamp = canceledSubscription.cancel_at; // Unix timestamp in seconds
+  const endDate = new Date(endTimestamp * 1000); // Convert to JS Date
+  await User.updateOne(
+    { email },
+    {
+      $set: {
+        subscription_status: "cancelling",
+        subscription_ends_at: endDate,
+      },
+    }
+  );
+  res.json({
+    success: true,
+    message: "Subscription set to cancel at the end of the billing period.",
+    subscriptionEndsAt: endTimestamp,
+  });
+};
+export const resumeSubscription = async (req: Request, res: Response) => {
+  const { subscriptionId, email } = req.body;
+
+  await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+  });
+
+  await User.updateOne(
+    { email },
+    {
+      $set: {
+        subscription_status: null,
+        subscription_ends_at: null,
+      },
+    }
+  );
 };
 
 export const webhook = async (req, res) => {
@@ -204,6 +232,20 @@ export const webhook = async (req, res) => {
       if (user) {
         await sendConfirmationEmail(user);
       }
+    } else if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object;
+      
+
+      const email = subscription.customer_email;
+
+      await User.updateOne(
+        { email: email },
+        {
+          $set: {
+            subscriptionId: null,
+          },
+        }
+      );
     } else if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
 
