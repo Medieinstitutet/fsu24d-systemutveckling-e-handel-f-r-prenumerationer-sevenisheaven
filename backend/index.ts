@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import Stripe from "stripe";
 
 import productsRouter from "./routes/products";
 import subscriptionsRouter from "./routes/subscription";
@@ -37,6 +38,60 @@ app.use("/stripe", stripeRouter);
 app.get("/", (_, res) => {
   res.send({ message: "Api running" });
 });
+
+// --------------------------------STRIPE--------------------------------------
+
+const stripe = new Stripe(
+  "sk_test_51R4KznRteeBh27q3OWioLwkbmUtD57IXN3Mt3gU9uXUBOBnRTQnjSziy8Wls8pJt9JtT613SSNvYhMKBt76lhklY00rDZRLC04"
+);
+app.get("/create-checkout-session", async (_, res) => {
+  const session = await stripe.checkout.sessions.create({
+    success_url:
+      "http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}",
+    line_items: [
+      {
+        price: "price_1RWXiKRteeBh27q378nLCeKn",
+        quantity: 1,
+      },
+    ],
+    mode: "subscription",
+  });
+
+  res.send({ session });
+});
+
+app.get("/verify-checkout-session", async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(
+    "cs_test_a1YvuYIlsDH5R4u0TgB4RCAHMfpRcxzPdAgYMVe7GtiRpBI3w8jyL2Mle1"
+  );
+
+  const subscriptionId = session.subscription;
+
+  if (session.status === "complete") {
+    //spara sub id i db
+  }
+  res.send(session);
+});
+
+app.post("/stripe-webhook", async (req, res) => {
+  console.log(req.body);
+
+  const type = req.body.type;
+  switch (type) {
+    case "checkout.session.completed":
+      // do something
+      break;
+    case "invoice.payment_failed":
+      // hämta sub id
+      // markera subscription som ej betald
+      // Hämta betallänk
+      break;
+    // invoice.payment_succeeded
+  }
+
+  res.send({});
+});
+// --------------------------------STRIPE--------------------------------------
 
 const connect = async () => {
   try {
