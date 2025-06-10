@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import User from "../models/User";
+import { Request, Response, RequestHandler } from "express";
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -64,43 +65,13 @@ const sendFailureEmail = async (user, hostedInvoiceUrl) => {
   }
 };
 
-const sendMissedPaymentMail = async (user, url) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: `Missed Payment`,
-    text: `Hello ${user.firstname}, There was a problem with your latest payment`,
-    html: `
-      <h1>Pay your remaining balance here, ${url}!</h1>
-      <p>Your subscription will be terminated otherwise</p>
-      <h2>THIS IS JUST A TEST!</h2>
-    `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Confirmation email sent successfully");
-  } catch (error) {
-    console.error("Error sending confirmation email:", error);
-  }
-};
-
 export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user, subscription } = req.body;
-    console.log("Incoming user:", user, subscription);
+    // console.log("Incoming user:", user, subscription);
 
     const priceLookup = {
-
-      "68380950c659b1a48ce18927": process.env.PRODUCT_1, 
+      "68380950c659b1a48ce18927": process.env.PRODUCT_1,
       "68380992c659b1a48ce18928": process.env.PRODUCT_2,
       "683809b3c659b1a48ce18929": process.env.PRODUCT_3,
     };
@@ -147,12 +118,10 @@ export const updateSubscription = async (req, res) => {
   );
   const subscriptionItemId = subscription.items.data[0].id;
 
-
-    await User.updateOne(
-      { email },
-      { $set: { subscription_id: subscriptionId } }
-    );
-  
+  await User.updateOne(
+    { email },
+    { $set: { subscription_id: subscriptionId } }
+  );
 
   const updatedSub = await stripe.subscriptions.update(
     currentStripeSubscriptionId,
@@ -168,8 +137,6 @@ export const updateSubscription = async (req, res) => {
       ],
     }
   );
-
-  console.log(updatedSub);
 
   res.json({
     success: true,
@@ -194,6 +161,51 @@ export const getSession = async (req, res) => {
   }
 };
 
+export const cancelSubscription = async (req: Request, res: Response) => {
+  const { subscriptionId, email } = req.body;
+
+  const canceledSubscription = await stripe.subscriptions.update(
+    subscriptionId,
+    {
+      cancel_at_period_end: true,
+    }
+  );
+
+  const endTimestamp = canceledSubscription.cancel_at; // Unix timestamp in seconds
+  const endDate = new Date(endTimestamp * 1000); // Convert to JS Date
+  await User.updateOne(
+    { email },
+    {
+      $set: {
+        subscription_status: "cancelling",
+        subscription_ends_at: endDate,
+      },
+    }
+  );
+  res.json({
+    success: true,
+    message: "Subscription set to cancel at the end of the billing period.",
+    subscriptionEndsAt: endTimestamp,
+  });
+};
+export const resumeSubscription = async (req: Request, res: Response) => {
+  const { subscriptionId, email } = req.body;
+
+  await stripe.subscriptions.update(subscriptionId, {
+    cancel_at_period_end: false,
+  });
+
+  await User.updateOne(
+    { email },
+    {
+      $set: {
+        subscription_status: "payment_successfull",
+        subscription_ends_at: null,
+      },
+    }
+  );
+};
+
 export const webhook = async (req, res) => {
   const event = req.body;
 
@@ -216,11 +228,24 @@ export const webhook = async (req, res) => {
           },
         }
       );
-
       const user = await User.findOne({ email: customerEmail });
       if (user) {
         await sendConfirmationEmail(user);
       }
+    } else if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object;
+      
+
+      const email = subscription.customer_email;
+
+      await User.updateOne(
+        { email: email },
+        {
+          $set: {
+            subscriptionId: null,
+          },
+        }
+      );
     } else if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
 
