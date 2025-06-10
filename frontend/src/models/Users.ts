@@ -11,6 +11,7 @@ export type Users = {
   postal_code: string;
   stripe_subscription_id: string;
   subscription_status: string;
+  subscription_ends_at: string;
   subscription_id: {
     _id: string;
     level_name: string;

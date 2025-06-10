@@ -7,37 +7,60 @@ import { Link } from "react-router";
 
 export const RenderMyPage = () => {
   const { user } = useAuth();
-
   const { fetchUserByEmailHandler } = useUser();
+
   const [currentUser, setCurrentUser] = useState<Users | null>(null);
   const [popupTrigger, setPopupTrigger] = useState<boolean>(false);
-
   const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
+  const [isSubscriptionCancelling, setIsSubscriptionCancelling] =
+    useState<boolean>(false);
 
-  const handleUnsubscribeClick = () => {
-    setPopupTrigger(true);
+
+  const handleUnsubscribeClick = () => setPopupTrigger(true);
+  const changeTriggerValue = (value: boolean) => setPopupTrigger(value);
+  const changeIsSubscribed = (value: boolean) => setIsSubscribed(value);
+  const resumeSubscription = async () => {
+    console.log(currentUser?.email);
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/stripe/resume-subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subscriptionId: currentUser?.stripe_subscription_id,
+            email: currentUser?.email,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log(data);
+    } catch (err) {
+      console.error("Unsubscribe failed:", err);
+    }
   };
 
-  const changeTriggerValue = (value: boolean) => {
-    setPopupTrigger(value);
-  };
-
-  const changeIsSubscribed = (value: boolean) => {
-    setIsSubscribed(value);
-  };
-
+  // Fetch user on mount or when isSubscribed changes
   useEffect(() => {
     const getUser = async () => {
       if (user) {
-        const result = await fetchUserByEmailHandler(user?.email);
+        const result = await fetchUserByEmailHandler(user.email);
         setCurrentUser(result);
       }
     };
     getUser();
-  }, [isSubscribed]);
+  }, [user, isSubscribed, fetchUserByEmailHandler]);
 
+  // Update subscription state when currentUser changes
   useEffect(() => {
     setIsSubscribed(!!currentUser?.subscription_id);
+    setIsSubscriptionCancelling(
+      currentUser?.subscription_status === "cancelling"
+    );
   }, [currentUser]);
 
   return (
@@ -47,18 +70,25 @@ export const RenderMyPage = () => {
           Welcome {currentUser?.firstname} {currentUser?.lastname} to Totally
           Confused Socks!
         </div>
-        {isSubscribed ? (
+        {isSubscriptionCancelling ? (
           <div>
-            {" "}
+            <div>
+              Your subscription will be cancelled on{" "}
+              {currentUser?.subscription_ends_at}
+            </div>
+            <button onClick={resumeSubscription}>Resume subscription</button>
+          </div>
+        ) : isSubscribed ? (
+          <div>
             <Link to={"/change_subscription"}>
               <button>Change Subscription</button>
-            </Link>{" "}
+            </Link>
             <button onClick={handleUnsubscribeClick}>Unsubscribe</button>
             <UnsubscribePopup
               changeIsSubscribed={changeIsSubscribed}
               trigger={popupTrigger}
               changeTriggerValue={changeTriggerValue}
-            ></UnsubscribePopup>
+            />
           </div>
         ) : (
           <div>
@@ -66,12 +96,14 @@ export const RenderMyPage = () => {
               You are currently not subscribed to any packages. Limited access
               only.
             </div>
-            <Link to={"/subscription"}>
-              <button>Press here to subscribe again</button>
-            </Link>
+            <button >
+              Press here to subscribe again (does nothing yet)
+            </button>
           </div>
         )}
       </div>
+
+
     </>
   );
 };

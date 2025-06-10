@@ -169,6 +169,8 @@ export const createUser = async (req: Request, res: Response) => {
 
     res.json({ user: userWithoutPassword });
   } catch (error) {
+    console.error("User creation error:", error); // Add this line
+
     res.status(500).json({ message: error.message });
   }
 };
@@ -176,14 +178,14 @@ export const createUser = async (req: Request, res: Response) => {
 export const updateUser = async (req, res) => {
   try {
     const { email } = req.params;
-    const { password, ...rest } = req.body; 
+    const { password, ...rest } = req.body;
 
     const updateData: any = { ...rest };
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
-    } 
+    }
 
     const result = await User.updateOne({ email }, { $set: updateData });
 

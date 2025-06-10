@@ -45,6 +45,11 @@ const User = new Schema({
     required: false,
     default: null,
   },
+  subscription_ends_at: {
+    type: String,
+    required: false,
+    default: null,
+  },
   stripe_subscription_id: {
     type: String,
     required: false,

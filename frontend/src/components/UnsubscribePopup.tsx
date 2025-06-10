@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { useAuth } from "../hooks/useAuth";
-import { IUserUpdate, Users } from "../models/Users";
+import { Users } from "../models/Users";
 
 interface IUnsubscribePopupProps {
   trigger: boolean;
@@ -11,7 +11,7 @@ interface IUnsubscribePopupProps {
 
 export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
   const { user } = useAuth();
-  const { fetchUserByEmailHandler, updateUserHandler } = useUser();
+  const { fetchUserByEmailHandler } = useUser();
 
   const [userToUpdate, setUserToUpdate] = useState<Users | null>(null);
 
@@ -21,11 +21,22 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
 
   const confirmUnsubscribe = async () => {
     if (!userToUpdate) return;
-
-    const unsubscribedUser = { ...userToUpdate, subscription_id: null };
-
     try {
-      await updateUserHandler(user!.email, unsubscribedUser);
+      const response = await fetch(
+        "http://localhost:3000/stripe/cancel-subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subscriptionId: userToUpdate.stripe_subscription_id,
+            email: userToUpdate.email,
+          }),
+        }
+      );
+      const data = await response.json()
+      console.log(data);
       props.changeIsSubscribed(false);
       props.changeTriggerValue(false);
     } catch (err) {

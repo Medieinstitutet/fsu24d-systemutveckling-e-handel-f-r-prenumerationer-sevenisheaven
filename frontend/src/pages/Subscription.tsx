@@ -5,7 +5,7 @@ import { StripeSub } from "../components/StripeSub";
 import { ChooseSubscription } from "../components/ChooseSubscription";
 
 export const Subscription = () => {
-  const { fetchUserByEmailHandler } = useUser();
+  const { fetchUserByEmailHandler, createUserHandler } = useUser();
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<"step-1" | "step-2" | "step-3">("step-1");
   const [subscription, setSubscription] = useState("");
@@ -20,6 +20,7 @@ export const Subscription = () => {
     city: "",
     street_address: "",
     postal_code: "",
+    subscription_id: null,
   });
 
   const handleNext = () => {
@@ -38,18 +39,21 @@ export const Subscription = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-
     try {
-      const customer = await fetchUserByEmailHandler(user.email);
-      if (customer) {
-        setError("E-postadressen är redan registrerad.");
+      let customer = await fetchUserByEmailHandler(user.email);
+      if (!customer) {
+        customer = await createUserHandler(user);
+        if (customer) {
+          // TODO: payment+couple between subcription and user
+          handleNext();
+        } else {
+          setError("Failed to create user");
+        }
       } else {
-        handleNext();
+        setError("Email is already in use");
       }
-    } catch (err) {
-      console.error("Fel vid användarverifiering:", err);
-      setError("Något gick fel. Försök igen senare.");
+    } catch (error) {
+      console.error("Error processing checkout:", error);
     }
   };
 
@@ -57,9 +61,16 @@ export const Subscription = () => {
     <div className="container">
       <h2>{stepHeadings[step]}</h2>
       {error && <h3 className="error">{error}</h3>}
-      {step === "step-1" && <ChooseSubscription setSubscription={setSubscription} handleNext={handleNext} />}
+      {step === "step-1" && (
+        <ChooseSubscription
+          setSubscription={setSubscription}
+          handleNext={handleNext}
+        />
+      )}
       {step === "step-2" && <CustomerForm user={user} setUser={setUser} />}
-      {step === "step-3" && <StripeSub user={user} subscription={subscription} />}
+      {step === "step-3" && (
+        <StripeSub user={user} subscription={subscription} />
+      )}
 
       <div className="button-div">
         {step !== "step-1" && <button onClick={handleBack}>Previous</button>}
