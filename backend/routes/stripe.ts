@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
-  checkoutSessionEmbedded, getSession,
+  checkoutSessionEmbedded,
+  getSession,
   updateSubscription,
   webhook,
 } from "../controllers/stripeController";

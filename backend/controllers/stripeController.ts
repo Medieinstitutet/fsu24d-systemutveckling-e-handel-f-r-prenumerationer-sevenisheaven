@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import User from "../models/User";
-import {Request, Response} from "express";
+import { Request, Response, RequestHandler } from "express";
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -65,14 +65,13 @@ const sendFailureEmail = async (user, hostedInvoiceUrl) => {
   }
 };
 
-export const checkoutSessionEmbedded = async (req: Request, res: Response) => {
+export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user, subscription } = req.body;
     console.log("Incoming user:", user, subscription);
 
     const priceLookup = {
-
-      "68380950c659b1a48ce18927": process.env.PRODUCT_1, 
+      "68380950c659b1a48ce18927": process.env.PRODUCT_1,
       "68380992c659b1a48ce18928": process.env.PRODUCT_2,
       "683809b3c659b1a48ce18929": process.env.PRODUCT_3,
     };
@@ -102,7 +101,7 @@ export const checkoutSessionEmbedded = async (req: Request, res: Response) => {
   }
 };
 
-export const updateSubscription = async (req: Request, res: Response) => {
+export const updateSubscription = async (req, res) => {
   const { currentStripeSubscriptionId, subscriptionId, email } = req.body;
 
   const priceLookup = {
@@ -119,12 +118,10 @@ export const updateSubscription = async (req: Request, res: Response) => {
   );
   const subscriptionItemId = subscription.items.data[0].id;
 
-
-    await User.updateOne(
-      { email },
-      { $set: { subscription_id: subscriptionId } }
-    );
-  
+  await User.updateOne(
+    { email },
+    { $set: { subscription_id: subscriptionId } }
+  );
 
   const updatedSub = await stripe.subscriptions.update(
     currentStripeSubscriptionId,
@@ -141,14 +138,13 @@ export const updateSubscription = async (req: Request, res: Response) => {
     }
   );
 
-
   res.json({
     success: true,
     stripe_subscription_id: updatedSub.id,
   });
 };
 
-export const getSession = async (req: Request, res: Response) => {
+export const getSession = async (req, res) => {
   const sessionId = req.params.sessionId;
 
   if (!sessionId) {
@@ -165,7 +161,14 @@ export const getSession = async (req: Request, res: Response) => {
   }
 };
 
-export const webhook = async (req: Request, res: Response) => {
+// export const cancelSubscription = async (req: Request, res: Response) => {
+//   const {subscriptionId} = req.body;
+
+
+//   const canceledSubscription = await stripe.subscriptions.del(subscriptionId);
+// };
+
+export const webhook = async (req, res) => {
   const event = req.body;
 
   try {

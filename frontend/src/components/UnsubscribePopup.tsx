@@ -26,6 +26,20 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
 
     try {
       await updateUserHandler(user!.email, unsubscribedUser);
+      const response = await fetch(
+        "http://localhost:3000/stripe/delete-subscription",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            subscriptionId: props.subscriptionId,
+            currentStripeSubscriptionId: props.user.stripe_subscription_id,
+            email: props.user.email,
+          }),
+        }
+      );
       props.changeIsSubscribed(false);
       props.changeTriggerValue(false);
     } catch (err) {
