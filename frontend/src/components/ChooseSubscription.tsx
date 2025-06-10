@@ -30,7 +30,7 @@ export const ChooseSubscription = ({
                 <h4>{s.level_name}</h4>
               </div>
               <div className="price-div">
-                <h1 style={{ fontSize: "2.5rem" }}>{s.tier} €</h1>
+                <h1 style={{ fontSize: "2.5rem" }}>{s.price} €</h1>
               </div>
             </div>
           </button>
