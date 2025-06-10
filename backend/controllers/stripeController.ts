@@ -68,7 +68,7 @@ const sendFailureEmail = async (user, hostedInvoiceUrl) => {
 export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user, subscription } = req.body;
-    console.log("Incoming user:", user, subscription);
+    // console.log("Incoming user:", user, subscription);
 
     const priceLookup = {
       "68380950c659b1a48ce18927": process.env.PRODUCT_1,
@@ -164,7 +164,6 @@ export const getSession = async (req, res) => {
 // export const cancelSubscription = async (req: Request, res: Response) => {
 //   const {subscriptionId} = req.body;
 
-
 //   const canceledSubscription = await stripe.subscriptions.del(subscriptionId);
 // };
 
@@ -190,7 +189,6 @@ export const webhook = async (req, res) => {
           },
         }
       );
-
       const user = await User.findOne({ email: customerEmail });
       if (user) {
         await sendConfirmationEmail(user);
