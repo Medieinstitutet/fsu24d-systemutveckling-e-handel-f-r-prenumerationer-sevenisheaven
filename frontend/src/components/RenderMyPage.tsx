@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
 import { Users } from "../models/Users";
 import { Link } from "react-router";
+import { StripeSub } from "./StripeSub";
 
 export const RenderMyPage = () => {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export const RenderMyPage = () => {
   const { fetchUserByEmailHandler } = useUser();
   const [currentUser, setCurrentUser] = useState<Users | null>(null);
   const [popupTrigger, setPopupTrigger] = useState<boolean>(false);
+  const [isResumeClicked, setIsResumeClicked] = useState<boolean>(false)
 
   const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
 
@@ -25,6 +27,10 @@ export const RenderMyPage = () => {
   const changeIsSubscribed = (value: boolean) => {
     setIsSubscribed(value);
   };
+
+  const handleResumeSubscription = async () => {
+     setIsResumeClicked(true)
+  }
 
   useEffect(() => {
     const getUser = async () => {
@@ -66,12 +72,12 @@ export const RenderMyPage = () => {
               You are currently not subscribed to any packages. Limited access
               only.
             </div>
-            <Link to={"/subscription"}>
-              <button>Press here to subscribe again</button>
-            </Link>
+              <button onClick={handleResumeSubscription}>Press here to subscribe again</button>
           </div>
         )}
       </div>
+
+      {isResumeClicked && <StripeSub user={currentUser!} subscription={currentUser?.subscription_id?._id!}></StripeSub>}
     </>
   );
 };

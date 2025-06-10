@@ -161,11 +161,22 @@ export const getSession = async (req, res) => {
   }
 };
 
-// export const cancelSubscription = async (req: Request, res: Response) => {
-//   const {subscriptionId} = req.body;
+export const cancelSubscription = async (req: Request, res: Response) => {
+  const { subscriptionId, email } = req.body;
 
-//   const canceledSubscription = await stripe.subscriptions.del(subscriptionId);
-// };
+  await User.updateOne(
+    { email },
+    { $set: { subscription_status: "canceled" } }
+  );
+
+  const canceledSubscription = await stripe.subscriptions.update(
+    subscriptionId,
+    {
+      cancel_at_period_end: true,
+    }
+  );
+  console.log(canceledSubscription);
+};
 
 export const webhook = async (req, res) => {
   const event = req.body;
