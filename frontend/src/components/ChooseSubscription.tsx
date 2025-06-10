@@ -1,80 +1,41 @@
-import SockEmergency from "../assets/sock_emergency.png";
-import SockRoll from "../assets/sock&roll.png";
-import SockRoyalty from "../assets/sock_royalty.png";
+import { useSubscriptions } from "../hooks/useSubscriptions";
 
 interface ChooseSubscriptionProps {
+  subscription: string;
   setSubscription: React.Dispatch<React.SetStateAction<string>>;
   handleNext: () => void;
 }
 export const ChooseSubscription = ({
+  subscription,
   setSubscription,
   handleNext,
 }: ChooseSubscriptionProps) => {
+  const { subscriptions } = useSubscriptions();
+
   return (
     <>
       <section className="subscriptions">
-        <button
+        {subscriptions.map((s) => (
+          <button
+          disabled={s._id === subscription}
+          style={{ opacity: s._id === subscription ? 0.5 : 1 }}
+          key={s._id}
           onClick={() => {
-            setSubscription("68380950c659b1a48ce18927");
+            setSubscription(s._id);
             handleNext();
           }}
-        >
-          <div className="subscription">
-            <div className="level-div">
-              <h4>Sock Emergency</h4>
-              <img style={{ height: "80px" }} src={SockEmergency} />
-              <p>
-                Start fresh with stylish essentials. Great quality, comfy fit,
-                and timeless designs delivered monthly
-              </p>
+          >
+            <div className="subscription">
+              <div className="level-div">
+                <h4>{s.level_name}</h4>
+              </div>
+              <div className="price-div">
+                <h1 style={{ fontSize: "2.5rem" }}>{s.tier} €</h1>
+              </div>
             </div>
-
-            <div className="price-div">
-              <h1 style={{ fontSize: "2.5rem" }}>14.99 €</h1>
-            </div>
-          </div>
-        </button>
-        <button
-          onClick={() => {
-            setSubscription("68380992c659b1a48ce18928");
-            handleNext();
-          }}
-        >
-          <div className="subscription">
-            <div className="level-div">
-              <h4>Sock & Roll</h4>
-              <img style={{ height: "80px" }} src={SockRoll} />
-              <p>
-                Step it up with bolder patterns, richer materials, and
-                limited-edition drops. Where comfort meets personality.
-              </p>
-            </div>
-            <div className="price-div">
-              <h1 style={{ fontSize: "2.5rem" }}>16.99 €</h1>
-            </div>
-          </div>
-        </button>
-        <button
-          onClick={() => {
-            setSubscription("683809b3c659b1a48ce18929");
-            handleNext();
-          }}
-        >
-          <div className="subscription">
-            <div className="level-div">
-              <h4>Sock Royalty</h4>
-              <img style={{ height: "80px" }} src={SockRoyalty} />
-              <p>
-                Top-tier toes only. Exclusive designer styles, luxury fabrics,
-                and maximum sock swag. The best of the best.
-              </p>
-            </div>{" "}
-            <div className="price-div">
-              <h1 style={{ fontSize: "2.5rem" }}>18.99 €</h1>
-            </div>
-          </div>
-        </button>
+          </button>
+        ))}
       </section>
     </>
-  );
+  )
 };

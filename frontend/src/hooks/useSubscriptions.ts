@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchSubscriptions } from "../services/subscriptionServices";
 import { getFromLocalStorage } from "../utils/localStorage";
 export const useSubscriptions = () => {
-  const [subscriptions, setSubscriptions] = useState(() => {
+  const [subscriptions, setSubscriptions] = useState<{ _id: string; level_name: string; tier: number }[]>(() => {
     const cachedSubscriptions = getFromLocalStorage("subscriptions");
     return cachedSubscriptions ? cachedSubscriptions : [];
   });

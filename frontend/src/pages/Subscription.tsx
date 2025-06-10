@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { CustomerForm } from "../components/CustomerForm";
 import { useUser } from "../hooks/useUser";
 import { StripeSub } from "../components/StripeSub";
