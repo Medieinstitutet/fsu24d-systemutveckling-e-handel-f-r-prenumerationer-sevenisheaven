@@ -21,7 +21,8 @@ app.use(cors({
   // Cross-Origin Request Blocked: The Same Origin Policy disallows reading 
   // the remote resource at ‘http://localhost:3000/users/login’. 
   // (Reason: Credential is not supported if the CORS header ‘Access-Control-Allow-Origin’ is ‘*’).
-  
+  // test array. this way, we can deploy remotely as well
+  // origin: ['https://medieinstitutet.github.io', ''http://localhost:5173']
   origin: 'http://localhost:5173',
   credentials: true,
 }));

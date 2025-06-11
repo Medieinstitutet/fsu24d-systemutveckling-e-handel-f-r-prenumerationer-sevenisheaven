@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
 import { Users } from "../models/Users";
 import { Link } from "react-router";
+import { API_URL } from "../services/baseService";
 
 export const RenderMyPage = () => {
   const { user } = useAuth();
@@ -15,16 +16,22 @@ export const RenderMyPage = () => {
   const [isSubscriptionCancelling, setIsSubscriptionCancelling] =
     useState<boolean>(false);
   const [isPaymentFailed, setIsPaymentFailed] = useState<boolean>(false);
+  const handleUnsubscribeClick = () => {
+    setPopupTrigger(true);
+  };
 
-  const handleUnsubscribeClick = () => setPopupTrigger(true);
-  const changeTriggerValue = (value: boolean) => setPopupTrigger(value);
-  const changeIsSubscribed = (value: boolean) => setIsSubscribed(value);
+  const changeTriggerValue = (value: boolean) => {
+    setPopupTrigger(value);
+  };
+
+  const changeIsSubscribed = (value: boolean) => {
+    setIsSubscribed(value);
+  };
+
   const resumeSubscription = async () => {
-    console.log(currentUser?.email);
-
     try {
       const response = await fetch(
-        "http://localhost:3000/stripe/resume-subscription",
+        `${API_URL}/stripe/resume-subscription`,
         {
           method: "POST",
           headers: {
@@ -36,11 +43,10 @@ export const RenderMyPage = () => {
           }),
         }
       );
-
       const data = await response.json();
       console.log(data);
     } catch (err) {
-      console.error("Unsubscribe failed:", err);
+      console.error("Resume subscription failed:", err);
     }
   };
 
@@ -71,6 +77,7 @@ export const RenderMyPage = () => {
           Welcome {currentUser?.firstname} {currentUser?.lastname} to Totally
           Confused Socks!
         </div>
+
         {isSubscriptionCancelling ? (
           <div>
             <div>
@@ -100,11 +107,6 @@ export const RenderMyPage = () => {
               <button>Change Subscription</button>
             </Link>
             <button onClick={handleUnsubscribeClick}>Unsubscribe</button>
-            <UnsubscribePopup
-              changeIsSubscribed={changeIsSubscribed}
-              trigger={popupTrigger}
-              changeTriggerValue={changeTriggerValue}
-            />
           </div>
         ) : (
           <div>
@@ -116,6 +118,14 @@ export const RenderMyPage = () => {
           </div>
         )}
       </div>
+
+      {popupTrigger && (
+        <UnsubscribePopup
+          changeIsSubscribed={changeIsSubscribed}
+          trigger={popupTrigger}
+          changeTriggerValue={changeTriggerValue}
+        />
+      )}
     </>
   );
 };

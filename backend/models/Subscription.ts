@@ -13,6 +13,14 @@ const Subscription = new Schema({
         type: Number,
         required: true
     },
+    description: {
+        type: String,
+        required: true
+    },
+    imageUrl: {
+        type: String,
+        required: true
+    },
 })
 
 export default model('subscriptions', Subscription)

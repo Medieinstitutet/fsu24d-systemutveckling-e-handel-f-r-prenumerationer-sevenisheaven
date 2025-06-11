@@ -4,7 +4,6 @@ import { Admin } from "./pages/Admin";
 import { AdminProducts } from "./pages/AdminProducts";
 import { Home } from "./pages/Home";
 import { Layout } from "./pages/Layout";
-/* import { OrderConfirmation } from "./pages/OrderConfirmation"; */
 import { Product } from "./pages/Product";
 import { Products } from "./pages/Products";
 import { Subscription } from "./pages/Subscription";
@@ -54,4 +53,8 @@ export const router = createBrowserRouter([
       { path: "/admin/products", element: <AdminProducts /> },
     ],
   },
-]);
+],
+{
+  basename: window.location.hostname === "medieinstitutet.github.io" ? '/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven/' : '/'
+}
+);

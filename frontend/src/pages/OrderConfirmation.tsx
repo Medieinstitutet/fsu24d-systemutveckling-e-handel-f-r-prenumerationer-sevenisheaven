@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
+import { API_URL } from "../services/baseService";
 
 export const OrderConfirmation = () => {
   const [sessionData, setSessionData] = useState({email:""});
@@ -15,7 +16,7 @@ export const OrderConfirmation = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:3000/stripe/sessions/${sessionId}`
+          `${API_URL}/stripe/sessions/${sessionId}`
         );
         const data = await response.json();
         setSessionData(data);

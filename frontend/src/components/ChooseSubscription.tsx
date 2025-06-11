@@ -5,6 +5,7 @@ interface ChooseSubscriptionProps {
   setSubscription: React.Dispatch<React.SetStateAction<string>>;
   handleNext: () => void;
 }
+
 export const ChooseSubscription = ({
   subscription,
   setSubscription,
@@ -28,7 +29,12 @@ export const ChooseSubscription = ({
             <div className="subscription">
               <div className="level-div">
                 <h4>{s.level_name}</h4>
+                <img style={{ height: "80px" }} src={s.imageUrl} />
+                <p>
+                  {s.description}
+                </p>
               </div>
+  
               <div className="price-div">
                 <h1 style={{ fontSize: "2.5rem" }}>{s.price} €</h1>
               </div>
