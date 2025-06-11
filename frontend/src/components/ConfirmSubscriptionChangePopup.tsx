@@ -10,97 +10,106 @@ interface IConfirmSubscriptionChangePopupProps {
   newSubscription: Users["subscription_id"];
 }
 
-export const ConfirmSubscriptionChangePopup = (
-  props: IConfirmSubscriptionChangePopupProps
-) => {
-  const [isChangeSuccessful, setIsChangeSuccessful] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export const ConfirmSubscriptionChangePopup = ({
+  user,
+  subscriptionId,
+  trigger,
+  changeTriggerValue,
+  newSubscription,
+}: IConfirmSubscriptionChangePopupProps) => {
+  const [isChangeSuccessful, setIsChangeSuccessful] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState<string | null>(null);
+
   useEffect(() => {
-    setIsLoading(false);
-    setIsChangeSuccessful(false);
-  }, []);
+    if (trigger) {
+      setIsLoading(false);
+      setIsChangeSuccessful(false);
+      setHasError(null);
+    }
+  }, [trigger]);
 
   const handleClose = () => {
-    props.changeTriggerValue(false);
+    changeTriggerValue(false);
   };
 
-  const handleConfirm = () => {
-    const changeSubscription = async () => {
-      try {
-        setIsLoading(true);
+ const handleConfirm = async () => {
+  setIsLoading(true);
+  setHasError(null);
 
-        const response = await fetch(
-          "http://localhost:3000/stripe/update-subscription",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              subscriptionId: props.subscriptionId,
-              currentStripeSubscriptionId: props.user.stripe_subscription_id,
-              email: props.user.email,
-            }),
-          }
-        );
-        await response.json();
+  if (!user.stripe_subscription_id) {
+    setHasError("Missing Stripe subscription ID for user.");
+    setIsLoading(false);
+    return;
+  }
 
-        if (response) {
-          setIsLoading(false);
-          setIsChangeSuccessful(true);
-        }
-      } catch (error) {
-        console.error("Error fetching client secret:", error);
-      }
-    };
+  try {
+    const response = await fetch("http://localhost:3000/stripe/update-subscription", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        subscriptionId,
+        currentStripeSubscriptionId: user.stripe_subscription_id,
+        email: user.email,
+      }),
+    });
 
-    changeSubscription();
-  };
+    const data = await response.json();
+    console.log(data);
+
+    if (response.ok) {
+      setIsChangeSuccessful(true);
+    } else {
+      setHasError(data?.message || "Something went wrong.");
+    }
+  } catch (error: any) {
+    console.error("Subscription update error:", error);
+    setHasError("Network error or server unavailable.");
+  } finally {
+    setIsLoading(false);
+  }
+ };
+  
+  if (!trigger) return null;
+
   return (
-    <>
-      {isLoading ? (
-        <div className="popup">
-          <div className="popup_inner">
-            <div>
-              <div>Loading.....</div>
+    <div className="overlay" aria-modal="true" role="dialog">
+      <div className="modal">
+        <button onClick={handleClose} className="close_btn">
+          ✕
+        </button>
+
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : isChangeSuccessful ? (
+          <>
+            <h3>Subscription Updated</h3>
+            <p>
+              You’ve successfully changed your subscription to <b>{newSubscription?.level_name}</b>!
+            </p>
+            <Link to="/my-page">
+              <button>Back to My Page</button>
+            </Link>
+          </>
+        ) : (
+          <>
+            <h3>Confirm Subscription Change</h3>
+            <p>
+              You are about to change your subscription to <b>{newSubscription?.level_name}</b>.{" "}
+              You will be billed immediately. Do you wish to proceed?
+            </p>
+
+            {hasError && <p className="error">{hasError}</p>}
+
+            <div className="popup_buttons">
+              <button onClick={handleConfirm}>Confirm</button>
+              <button onClick={handleClose}>Cancel</button>
             </div>
-          </div>
-        </div>
-      ) : props.trigger && !isChangeSuccessful ? (
-        <div className="popup">
-          <div className="popup_inner">
-            <button onClick={handleClose} className="close_btn">
-              Close
-            </button>
-            <div>
-              <div>
-                <p>
-                  You are about to change your subscription to{" "}
-                  <b>{props.newSubscription?.level_name}</b>. You will be billed
-                  immediatly. Do you wish to proceed?
-                </p>{" "}
-                <button onClick={handleConfirm}>Confirm</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : props.trigger && isChangeSuccessful ? (
-        <div className="popup">
-          <div className="popup_inner">
-            <div>
-              <div>
-                Successfully changed subscription to{" "}
-                <b>{props.newSubscription?.level_name}!</b>
-              </div>
-              <Link to={"/my-page"}>
-                <button>Back to my page</button>
-              </Link>{" "}
-            </div>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

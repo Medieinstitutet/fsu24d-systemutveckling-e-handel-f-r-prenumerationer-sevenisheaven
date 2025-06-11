@@ -24,7 +24,7 @@ export const RenderFooterInfo = () => {
             <Link to={"/login"}>Login</Link>
           </li>
           <li>
-            <Link to={"/subscribtion"}>Subscribe</Link>
+            <Link to={"/subscription"}>Subscribe</Link>
           </li>
         </ul>
 
