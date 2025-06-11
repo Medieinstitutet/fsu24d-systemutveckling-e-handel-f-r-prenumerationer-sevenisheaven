@@ -37,7 +37,7 @@ export const checkoutSessionEmbedded = async (req, res) => {
       ],
       customer_email: user.email,
       client_reference_id: subscription,
-      return_url: `http://localhost:5173/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${!!process.env.IS_RUNNING_REMOTELY ? 'https://medieinstitutet.github.io/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven' : 'http://localhost:5173'}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     res.json({ clientSecret: session.client_secret });
