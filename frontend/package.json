@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "private": true,
+  "homepage": "https://medieinstitutet.github.io/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
