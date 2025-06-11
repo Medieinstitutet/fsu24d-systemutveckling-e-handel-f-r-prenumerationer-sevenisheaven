@@ -10,19 +10,25 @@ interface IUnsubscribePopupProps {
   changeTriggerValue: (value: boolean) => void;
 }
 
-export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
+export const UnsubscribePopup = ({
+  trigger,
+  changeIsSubscribed,
+  changeTriggerValue,
+}: IUnsubscribePopupProps) => {
   const { user } = useAuth();
   const { fetchUserByEmailHandler } = useUser();
 
   const [userToUpdate, setUserToUpdate] = useState<Users | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleClose = () => {
-    props.changeTriggerValue(false);
+    changeTriggerValue(false);
   };
 
   const confirmUnsubscribe = async () => {
     if (!userToUpdate) return;
     try {
+      setLoading(true);
       const response = await fetch(
         `${API_URL}/stripe/cancel-subscription`,
         {
@@ -36,44 +42,43 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
           }),
         }
       );
-      const data = await response.json()
+      const data = await response.json();
       console.log(data);
-      props.changeIsSubscribed(false);
-      props.changeTriggerValue(false);
+      changeIsSubscribed(false);
+      changeTriggerValue(false);
     } catch (err) {
       console.error("Unsubscribe failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     const getUser = async () => {
-      if (user) {
-        const result = await fetchUserByEmailHandler(user?.email);
+      if (user && trigger) {
+        const result = await fetchUserByEmailHandler(user.email);
         setUserToUpdate(result);
       }
     };
     getUser();
-  }, [props.trigger]);
+  }, [trigger]);
+
+  if (!trigger) return null;
+
   return (
-    <>
-      {props.trigger ? (
-        <div className="popup">
-          <div className="popup_inner">
-            <button onClick={handleClose} className="close_btn">
-              Close
-            </button>
-            <div>
-              <div>
-                <h2>We're sorry to see you go!</h2>
-                <h3>Are you sure you wish to unsubscribe?</h3>
-                <button onClick={confirmUnsubscribe}>Confirm</button>
-              </div>
-            </div>
-          </div>
+    <div className="overlay" aria-modal="true" role="dialog">
+      <div className="modal">
+        <button onClick={handleClose} className="close_btn">
+          ✕
+        </button>
+        <h2>We're sorry to see you go!</h2>
+        <p>Are you sure you want to unsubscribe from your plan?</p>
+        <div className="unsubscribe_popup_buttons">
+          <button onClick={confirmUnsubscribe} disabled={loading}>
+            {loading ? "Unsubscribing..." : "Confirm"}
+          </button>
         </div>
-      ) : (
-        ""
-      )}
-    </>
+      </div>
+    </div>
   );
 };

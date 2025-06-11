@@ -5,6 +5,7 @@ interface ChooseSubscriptionProps {
   setSubscription: React.Dispatch<React.SetStateAction<string>>;
   handleNext: () => void;
 }
+
 export const ChooseSubscription = ({
   subscription,
   setSubscription,

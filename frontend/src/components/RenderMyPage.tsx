@@ -16,13 +16,19 @@ export const RenderMyPage = () => {
   const [isSubscriptionCancelling, setIsSubscriptionCancelling] =
     useState<boolean>(false);
 
+  const handleUnsubscribeClick = () => {
+    setPopupTrigger(true);
+  };
 
-  const handleUnsubscribeClick = () => setPopupTrigger(true);
-  const changeTriggerValue = (value: boolean) => setPopupTrigger(value);
-  const changeIsSubscribed = (value: boolean) => setIsSubscribed(value);
+  const changeTriggerValue = (value: boolean) => {
+    setPopupTrigger(value);
+  };
+
+  const changeIsSubscribed = (value: boolean) => {
+    setIsSubscribed(value);
+  };
+
   const resumeSubscription = async () => {
-    console.log(currentUser?.email);
-
     try {
       const response = await fetch(
         `${API_URL}/stripe/resume-subscription`,
@@ -37,15 +43,13 @@ export const RenderMyPage = () => {
           }),
         }
       );
-
       const data = await response.json();
       console.log(data);
     } catch (err) {
-      console.error("Unsubscribe failed:", err);
+      console.error("Resume subscription failed:", err);
     }
   };
 
-  // Fetch user on mount or when isSubscribed changes
   useEffect(() => {
     const getUser = async () => {
       if (user) {
@@ -56,7 +60,6 @@ export const RenderMyPage = () => {
     getUser();
   }, [user, isSubscribed, fetchUserByEmailHandler]);
 
-  // Update subscription state when currentUser changes
   useEffect(() => {
     setIsSubscribed(!!currentUser?.subscription_id);
     setIsSubscriptionCancelling(
@@ -71,6 +74,7 @@ export const RenderMyPage = () => {
           Welcome {currentUser?.firstname} {currentUser?.lastname} to Totally
           Confused Socks!
         </div>
+
         {isSubscriptionCancelling ? (
           <div>
             <div>
@@ -85,11 +89,6 @@ export const RenderMyPage = () => {
               <button>Change Subscription</button>
             </Link>
             <button onClick={handleUnsubscribeClick}>Unsubscribe</button>
-            <UnsubscribePopup
-              changeIsSubscribed={changeIsSubscribed}
-              trigger={popupTrigger}
-              changeTriggerValue={changeTriggerValue}
-            />
           </div>
         ) : (
           <div>
@@ -97,14 +96,20 @@ export const RenderMyPage = () => {
               You are currently not subscribed to any packages. Limited access
               only.
             </div>
-            <button >
+            <button>
               Press here to subscribe again (does nothing yet)
             </button>
           </div>
         )}
       </div>
 
-
+      {popupTrigger && (
+        <UnsubscribePopup
+          changeIsSubscribed={changeIsSubscribed}
+          trigger={popupTrigger}
+          changeTriggerValue={changeTriggerValue}
+        />
+      )}
     </>
   );
 };
