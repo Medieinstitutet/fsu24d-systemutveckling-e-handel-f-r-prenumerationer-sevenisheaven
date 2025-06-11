@@ -78,7 +78,7 @@ export const RenderAllProducts = () => {
           <div className="subscription_buttons">
             <button
               onClick={() => {
-                filterBySubscription(, "");
+                filterBySubscription(0, "");
               }}
             >
               All socks
