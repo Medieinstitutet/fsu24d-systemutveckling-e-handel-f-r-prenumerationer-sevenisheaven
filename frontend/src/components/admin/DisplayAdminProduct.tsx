@@ -49,7 +49,7 @@ export const DisplayAdminProduct = ({
   };
 
   return (
-    <article className="product-article-admin" key={p._id}>
+    <article className="product-article-admin">
       <Star className="star" fill={getStarColor(levelName)} />
       <img src={p.image} />
       <form onSubmit={handleSubmit}>
