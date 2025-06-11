@@ -8,7 +8,7 @@ function App() {
     <>
       <AuthProvider>
         <CartProvider>
-          <RouterProvider basename={import.meta.env.BASE_URL} router={router}></RouterProvider>
+          <RouterProvider router={router}></RouterProvider>
         </CartProvider>
       </AuthProvider>
     </>
