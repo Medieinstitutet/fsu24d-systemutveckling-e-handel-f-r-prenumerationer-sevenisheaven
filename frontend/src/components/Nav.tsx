@@ -20,7 +20,7 @@ export const Nav = () => {
       <section id="nav">
         <NavLink to="/products">Socks</NavLink>
         <NavLink to="/my-page">My Page</NavLink>
-        <NavLink to="/subscription">
+        <NavLink to="/change_subscription">
           <div id="button-style">Subscription</div>
         </NavLink>
         <NavLink to={"/cart"}>

@@ -40,8 +40,8 @@ export const router = createBrowserRouter([
       { path: "/products", element: <Products /> },
       { path: "/products/:id", element: <Product /> },
       { path: "/my-page", element: <MyPage /> },
-      {path: "/cart", element: <Cart />},
-      {path: "/change_subscription", element: <ChangeSubscription />},
+      { path: "/cart", element: <Cart />},
+      { path: "/change_subscription", element: <ChangeSubscription />},
     ],
   },
   {

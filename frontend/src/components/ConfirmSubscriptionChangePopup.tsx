@@ -109,7 +109,6 @@ export const ConfirmSubscriptionChangePopup = ({
 
             <div className="popup_buttons">
               <button onClick={handleConfirm}>Confirm</button>
-              <button onClick={handleClose}>Cancel</button>
             </div>
           </>
         )}
