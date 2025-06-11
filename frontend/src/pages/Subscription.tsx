@@ -63,6 +63,7 @@ export const Subscription = () => {
       {error && <h3 className="error">{error}</h3>}
       {step === "step-1" && (
         <ChooseSubscription
+          subscription={subscription}
           setSubscription={setSubscription}
           handleNext={handleNext}
         />

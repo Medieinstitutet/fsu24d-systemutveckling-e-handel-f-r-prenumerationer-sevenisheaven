@@ -25,11 +25,11 @@ export const RenderAllProducts = () => {
 
   const [subscriptionName, setSubscriptionName] = useState<string>("");
   const filterBySubscription = async (
-    subscriptionTier: string,
+    subscriptionTier: number,
     subscriptionName: string
   ) => {
     setSubscriptionName(subscriptionName);
-    await fetchAllProductsHandler(subscriptionTier, 1, 12);
+    await fetchAllProductsHandler(String(subscriptionTier), 1, 12);
   };
 
   const handleProductClick = (productTier: number) => {
@@ -78,7 +78,7 @@ export const RenderAllProducts = () => {
           <div className="subscription_buttons">
             <button
               onClick={() => {
-                filterBySubscription("", "");
+                filterBySubscription(, "");
               }}
             >
               All socks

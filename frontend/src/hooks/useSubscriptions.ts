@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSubscriptions } from "../services/subscriptionServices";
 import { getFromLocalStorage } from "../utils/localStorage";
+
 export const useSubscriptions = () => {
   const [subscriptions, setSubscriptions] = useState<{ _id: string; level_name: string; tier: number; price: number; description: string; imageUrl: string }[]>(() => {
     const cachedSubscriptions = getFromLocalStorage("subscriptions");
@@ -21,7 +22,7 @@ export const useSubscriptions = () => {
   const getAllSubscriptionsHandler = async () => {
     setLoading(true);
     try {
-      const data = await fetchSubscriptions();
+      const data = await fetchSubscriptions() as { _id: string; level_name: string; tier: number; price: number; description: string; imageUrl: string; }[];
       setSubscriptions(data);
     } catch (error) {
       setError("Error fetching subscription");
