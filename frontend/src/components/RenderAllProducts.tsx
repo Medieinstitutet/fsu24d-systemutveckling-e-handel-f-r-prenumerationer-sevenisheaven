@@ -8,6 +8,7 @@ import { Product } from "../models/Products";
 import { useCart } from "../hooks/useCart";
 import { ChangeSockPopup } from "./ChangeSockPopup";
 import { UpgradePopup } from "./UpgradePopup";
+import { Users } from "../models/Users";
 
 export const RenderAllProducts = () => {
   const { user } = useAuth();
@@ -17,21 +18,31 @@ export const RenderAllProducts = () => {
   const { subscriptions } = useSubscriptions();
 
   const [newSock, setNewSock] = useState<Product>();
-  const [userSubscriptionTier, setUserSubscriptionTier] = useState<number | null>(null);
+  const [userSubscriptionTier, setUserSubscriptionTier] = useState<
+    number | null
+  >(null);
   const [popupTrigger, setPopupTrigger] = useState<boolean>(false);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
   const [subscriptionName, setSubscriptionName] = useState<string>("");
+  const [isPaymentFailed, setIsPaymentFailed] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<Users | null>(null);
 
   const [blockedSock, setBlockedSock] = useState<Product | null>(null);
   const [showUpgradePopup, setShowUpgradePopup] = useState<boolean>(false);
 
-  const filterBySubscription = async (subscriptionTier: number, name: string) => {
+  const filterBySubscription = async (
+    subscriptionTier: number,
+    name: string
+  ) => {
     setSubscriptionName(name);
     await fetchAllProductsHandler(String(subscriptionTier), 1, 12);
   };
 
   const handleProductClick = (product: Product) => {
-    if (userSubscriptionTier === null || product.subscription_id.tier > userSubscriptionTier) {
+    if (
+      userSubscriptionTier === null ||
+      product.subscription_id.tier > userSubscriptionTier
+    ) {
       setBlockedSock(product);
       setShowUpgradePopup(true);
     }
@@ -56,6 +67,7 @@ export const RenderAllProducts = () => {
     const getUserSubscription = async () => {
       if (user) {
         const result = await fetchUserByEmailHandler(user?.email);
+        setCurrentUser(result);
         if (result && result.subscription_id) {
           setUserSubscriptionTier(result.subscription_id.tier);
         }
@@ -66,39 +78,90 @@ export const RenderAllProducts = () => {
 
   useEffect(() => {
     setIsSubscribed(!!userSubscriptionTier);
+    setIsPaymentFailed(currentUser?.subscription_status === "payment_failed");
   }, [userSubscriptionTier]);
+
+  console.log(currentUser);
+  console.log(isPaymentFailed);
+
+  if (isPaymentFailed) {
+    return (
+      <>
+        <div>
+          You have a missed payment. Access limited.{" "}
+          <a
+            href={`${currentUser?.retry_payment_url}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button>Press here to pay</button>
+          </a>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       {!isSubscribed ? (
         <h3>
-          You are currently not subscribed to any of our packages. Please subscribe for full access.
+          You are currently not subscribed to any of our packages. Please
+          subscribe for full access.
         </h3>
       ) : (
         <div className="sort_by_subscription">
           <div className="subscription_buttons">
-            <button onClick={() => filterBySubscription(0, "")}>All socks</button>
-            <button onClick={() => filterBySubscription(subscriptions[0].tier, subscriptions[0].level_name)}>
+            <button onClick={() => filterBySubscription(0, "")}>
+              All socks
+            </button>
+            <button
+              onClick={() =>
+                filterBySubscription(
+                  subscriptions[0].tier,
+                  subscriptions[0].level_name
+                )
+              }
+            >
               Sock Emergency <Star fill="#CD7F32" />
             </button>
-            <button onClick={() => filterBySubscription(subscriptions[1].tier, subscriptions[1].level_name)}>
+            <button
+              onClick={() =>
+                filterBySubscription(
+                  subscriptions[1].tier,
+                  subscriptions[1].level_name
+                )
+              }
+            >
               Sock & Roll <Star fill="#C0C0C0" />
             </button>
-            <button onClick={() => filterBySubscription(subscriptions[2].tier, subscriptions[2].level_name)}>
+            <button
+              onClick={() =>
+                filterBySubscription(
+                  subscriptions[2].tier,
+                  subscriptions[2].level_name
+                )
+              }
+            >
               Sock Royalty <Star fill="#FFD700" />
             </button>
           </div>
         </div>
       )}
 
-      <h2>{subscriptionName !== "" ? `The ${subscriptionName} subscription has access to:` : "All socks:"}</h2>
+      <h2>
+        {subscriptionName !== ""
+          ? `The ${subscriptionName} subscription has access to:`
+          : "All socks:"}
+      </h2>
 
       <div className="products_list">
         {products.map((p) => (
           <div
             key={p._id}
             className={`product_card ${
-              p.subscription_id.tier > (userSubscriptionTier ?? 0) ? "no_access" : ""
+              p.subscription_id.tier > (userSubscriptionTier ?? 0)
+                ? "no_access"
+                : ""
             }`}
             onClick={() => handleProductClick(p)}
           >
@@ -116,7 +179,9 @@ export const RenderAllProducts = () => {
               </p>
             </div>
             {p.subscription_id.tier <= (userSubscriptionTier ?? 0) && (
-              <button onClick={(e) => handleAddClick(e, p)}>Add to weekly sock</button>
+              <button onClick={(e) => handleAddClick(e, p)}>
+                Add to weekly sock
+              </button>
             )}
           </div>
         ))}
