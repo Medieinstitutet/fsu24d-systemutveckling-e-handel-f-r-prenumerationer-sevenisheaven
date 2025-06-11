@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Users } from "../models/Users";
 import { Link } from "react-router";
+import { API_URL } from "../services/baseService";
 
 interface IConfirmSubscriptionChangePopupProps {
   user: Users;
@@ -30,7 +31,7 @@ export const ConfirmSubscriptionChangePopup = (
         setIsLoading(true);
 
         const response = await fetch(
-          "http://localhost:3000/stripe/update-subscription",
+          `${API_URL}/stripe/update-subscription`,
           {
             method: "POST",
             headers: {

@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
 import { Users } from "../models/Users";
 import { Link } from "react-router";
+import { API_URL } from "../services/baseService";
 
 export const RenderMyPage = () => {
   const { user } = useAuth();
@@ -24,7 +25,7 @@ export const RenderMyPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/stripe/resume-subscription",
+        `${API_URL}/stripe/resume-subscription`,
         {
           method: "POST",
           headers: {

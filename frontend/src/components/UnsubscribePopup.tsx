@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { useAuth } from "../hooks/useAuth";
 import { Users } from "../models/Users";
+import { API_URL } from "../services/baseService";
 
 interface IUnsubscribePopupProps {
   trigger: boolean;
@@ -23,7 +24,7 @@ export const UnsubscribePopup = (props: IUnsubscribePopupProps) => {
     if (!userToUpdate) return;
     try {
       const response = await fetch(
-        "http://localhost:3000/stripe/cancel-subscription",
+        `${API_URL}/stripe/cancel-subscription`,
         {
           method: "POST",
           headers: {

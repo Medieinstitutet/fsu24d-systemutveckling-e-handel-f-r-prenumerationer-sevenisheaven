@@ -1,6 +1,7 @@
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { API_URL } from "../services/baseService";
 
 interface StripeSubProps {
     user: {
@@ -31,7 +32,7 @@ export const StripeSub = ({ user, subscription }: StripeSubProps) => {
         const fetchClientSecret = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:3000/stripe/create-checkout-session-embedded",
+                    `${API_URL}/stripe/create-checkout-session-embedded`,
                     {
                         method: "POST",
                         headers: {
