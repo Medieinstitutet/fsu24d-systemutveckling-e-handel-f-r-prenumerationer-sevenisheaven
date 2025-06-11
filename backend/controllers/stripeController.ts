@@ -234,18 +234,23 @@ export const webhook = async (req, res) => {
       }
     } else if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
-      
 
-      const email = subscription.customer_email;
+      const customer = await stripe.customers.retrieve(subscription.customer);
 
-      await User.updateOne(
-        { email: email },
-        {
-          $set: {
-            subscriptionId: null,
-          },
-        }
-      );
+      if (!("deleted" in customer)) {
+        const email = customer.email;
+
+        await User.updateOne(
+          { email: email },
+          {
+            $set: {
+              subscription_id: null,
+              subscription_status: "cancelled",
+              subscription_ends_at: null,
+            },
+          }
+        );
+      }
     } else if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
 
@@ -258,7 +263,12 @@ export const webhook = async (req, res) => {
       if (user) {
         await User.updateOne(
           { email },
-          { $set: { subscription_status: "payment_failed" } }
+          {
+            $set: {
+              subscription_status: "payment_failed",
+              retry_payment_url: hostedInvoiceUrl,
+            },
+          }
         );
 
         await sendFailureEmail(user, hostedInvoiceUrl);
@@ -273,7 +283,7 @@ export const webhook = async (req, res) => {
       if (user) {
         await User.updateOne(
           { email },
-          { $set: { subscription_status: "payment_successfull" } }
+          { $set: { subscription_status: "payment_successfull", retry_payment_url: null } }
         );
         await sendConfirmationEmail(user);
       }

@@ -60,6 +60,11 @@ const User = new Schema({
     required: false,
     default: null,
   },
+  retry_payment_url: {
+    type: String,
+    required: false,
+    default: null,
+  },
 
   token: {
     type: String,

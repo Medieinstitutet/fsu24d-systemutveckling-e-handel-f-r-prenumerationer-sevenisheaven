@@ -14,7 +14,7 @@ export const RenderMyPage = () => {
   const [isSubscribed, setIsSubscribed] = useState<boolean>(true);
   const [isSubscriptionCancelling, setIsSubscriptionCancelling] =
     useState<boolean>(false);
-
+  const [isPaymentFailed, setIsPaymentFailed] = useState<boolean>(false);
 
   const handleUnsubscribeClick = () => setPopupTrigger(true);
   const changeTriggerValue = (value: boolean) => setPopupTrigger(value);
@@ -44,7 +44,6 @@ export const RenderMyPage = () => {
     }
   };
 
-  // Fetch user on mount or when isSubscribed changes
   useEffect(() => {
     const getUser = async () => {
       if (user) {
@@ -53,15 +52,17 @@ export const RenderMyPage = () => {
       }
     };
     getUser();
-  }, [user, isSubscribed, fetchUserByEmailHandler]);
+  }, [user]);
 
-  // Update subscription state when currentUser changes
   useEffect(() => {
     setIsSubscribed(!!currentUser?.subscription_id);
     setIsSubscriptionCancelling(
       currentUser?.subscription_status === "cancelling"
     );
+    setIsPaymentFailed(currentUser?.subscription_status === "payment_failed");
   }, [currentUser]);
+
+  console.log(isPaymentFailed);
 
   return (
     <>
@@ -77,6 +78,21 @@ export const RenderMyPage = () => {
               {currentUser?.subscription_ends_at}
             </div>
             <button onClick={resumeSubscription}>Resume subscription</button>
+          </div>
+        ) : isPaymentFailed ? (
+          <div>
+            <div>You have an unpaid subscription fee.</div>
+            <p>Your subscription is temporarily disabled until you have paid the invoice.</p>
+            
+            
+            <a
+              href={`${currentUser?.retry_payment_url}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button>Press here to pay</button>
+            </a>
+            
           </div>
         ) : isSubscribed ? (
           <div>
@@ -96,14 +112,10 @@ export const RenderMyPage = () => {
               You are currently not subscribed to any packages. Limited access
               only.
             </div>
-            <button >
-              Press here to subscribe again (does nothing yet)
-            </button>
+            <button>Press here to subscribe again (does nothing yet)</button>
           </div>
         )}
       </div>
-
-
     </>
   );
 };
