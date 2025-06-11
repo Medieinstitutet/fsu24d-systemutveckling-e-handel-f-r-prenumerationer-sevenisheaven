@@ -18,7 +18,7 @@ const subscriptionNameLookup = {
 
 const getPlanName = (id: string) => subscriptionNameLookup[id] || "Unknown Plan";
 
-const sendEmail = async (to: string, subject: string, html: string, text: string) => {
+export const sendEmail = async (to: string, subject: string, html: string, text: string) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -72,3 +72,4 @@ export const sendPaymentSuccesEmail = async (user) => {
       "Your subscription will continue as planned"
   );
 };
+

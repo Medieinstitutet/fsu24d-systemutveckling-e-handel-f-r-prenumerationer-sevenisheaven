@@ -14,6 +14,7 @@ import { Blocked } from "./pages/Blocked";
 import { Cart } from "./pages/Cart";
 import { OrderConfirmation } from "./pages/OrderConfirmation";
 import { ChangeSubscription } from "./components/ChangeSubscription";
+import ResetPassword from "./pages/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/subscription", element: <Subscription /> },
       { path: "/order-confirmation", element: <OrderConfirmation /> },
+      { path: "/reset-password/:token", element: <ResetPassword />}
     ],
   },
   {
