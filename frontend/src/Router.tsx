@@ -56,6 +56,6 @@ export const router = createBrowserRouter([
   },
 ],
 {
-  basename: import.meta.env.BASE_URL,
+  basename: window.location.hostname === "medieinstitutet.github.io" ? '/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven/' : '/'
 }
 );
