@@ -1,74 +1,20 @@
-import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import User from "../models/User";
-import { Request, Response, RequestHandler } from "express";
+import { Request, Response } from "express";
 dotenv.config();
+import {
+  sendConfirmationEmail,
+  sendChangeEmail,
+  sendFailureEmail,
+  sendPaymentSuccesEmail,
+} from "../utils/emailService";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-const sendConfirmationEmail = async (user) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: `Subscription Confirmation - ${user.subscription_id}`,
-    text: `Hello ${user.firstname}, your order with ID ${user.subscription_id} has been successfully placed. Thank you for shopping with us!`,
-    html: `
-      <h1>Thank you for your order, ${user.firstname}!</h1>
-      <p>Your order with ID <strong>${user.subscription_id}</strong> has been successfully placed and is being processed.</p>
-      <p>We will notify you once your order is shipped.</p>
-      <h2>THIS IS JUST A TEST!</h2>
-    `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Confirmation email sent successfully");
-  } catch (error) {
-    console.error("Error sending confirmation email:", error);
-  }
-};
-const sendFailureEmail = async (user, hostedInvoiceUrl) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subject: `Missed Payment`,
-    text: `Hello ${user.firstname}, There was a problem with your latest payment`,
-    html: `
-      <h1>Pay your remaining balance here, ${hostedInvoiceUrl}!</h1>
-      <p>Your subscription will be terminated otherwise</p>
-      <h2>THIS IS JUST A TEST!</h2>
-    `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log("Failure email sent successfully");
-  } catch (error) {
-    console.error("Error sending failure email:", error);
-  }
-};
 
 export const checkoutSessionEmbedded = async (req, res) => {
   try {
     const { user, subscription } = req.body;
-    // console.log("Incoming user:", user, subscription);
 
     const priceLookup = {
       "68380950c659b1a48ce18927": process.env.PRODUCT_1,
@@ -122,6 +68,8 @@ export const updateSubscription = async (req, res) => {
     { email },
     { $set: { subscription_id: subscriptionId } }
   );
+
+  await sendChangeEmail(email, subscriptionId);
 
   const updatedSub = await stripe.subscriptions.update(
     currentStripeSubscriptionId,
@@ -248,8 +196,6 @@ export const webhook = async (req, res) => {
       );
     } else if (event.type === "invoice.payment_failed") {
       const invoice = event.data.object;
-
-      const subscriptionId = invoice.subscription;
       const email = invoice.customer_email;
       const hostedInvoiceUrl = invoice.hosted_invoice_url;
 
@@ -260,11 +206,9 @@ export const webhook = async (req, res) => {
           { email },
           { $set: { subscription_status: "payment_failed" } }
         );
-
         await sendFailureEmail(user, hostedInvoiceUrl);
       }
 
-      console.log(`Payment failed for subscription ${subscriptionId}`);
     } else if (event.type === "invoice.payment_succeeded") {
       const invoice = event.data.object;
       const email = invoice.customer_email;
@@ -275,7 +219,7 @@ export const webhook = async (req, res) => {
           { email },
           { $set: { subscription_status: "payment_successfull" } }
         );
-        await sendConfirmationEmail(user);
+        await sendPaymentSuccesEmail(user);
       }
     } else {
       console.log(`Unhandled event type: ${event.type}`);
