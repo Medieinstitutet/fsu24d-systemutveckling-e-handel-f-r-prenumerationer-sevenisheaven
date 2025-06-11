@@ -33,6 +33,7 @@ export const AdminProducts = () => {
                 p={p}
                 onUpdate={updateProductHandler}
                 onDelete={deleteProductHandler}
+                key={p._id}
               />
             ))
           ) : (

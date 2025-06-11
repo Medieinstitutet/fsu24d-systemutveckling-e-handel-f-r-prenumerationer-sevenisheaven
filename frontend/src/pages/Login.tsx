@@ -67,21 +67,21 @@ export const Login = () => {
             required
           />
           <div className="button-div">
-            <button type="submit">Login</button>
             <button
               type="button"
               onClick={() =>
                 setTypeOfLogin((prev) =>
                   prev === "customer" ? "admin" : "customer"
-                )
-              }
+            )
+          }
             >
               {typeOfLogin === "customer" ? "Admin" : "Customer"} Login
             </button>
-          </div>
           <button type="button" onClick={() => setShowResetForm(true)}>
             Forgot Password?
           </button>
+          </div>
+          <button type="submit">Login</button>
         </form>
       ) : (
         <form onSubmit={handlePasswordReset}>

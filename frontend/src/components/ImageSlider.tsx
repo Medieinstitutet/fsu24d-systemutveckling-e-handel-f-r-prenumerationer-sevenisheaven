@@ -24,11 +24,10 @@ export const ImageSlider = () => {
     <>
       {products.length > 0 && (
         <div className="slider-wrapper">
-          {/* Slider Container */}
           <div className="slider-track" style={slideStyle}>
             {products.map((p, i) => (
               <div key={i} className="slide">
-                <Link to={`/product/asd`}>
+                <Link to={`/subscription`}>
                   <img src={p.image} alt="" className="slide-image" />
                 </Link>
                 <h3>{p.product_name}</h3>
@@ -36,7 +35,6 @@ export const ImageSlider = () => {
             ))}
           </div>
 
-          {/* Navigation Buttons */}
           <button onClick={showPreviousImage} className="slider-button left">
             <ArrowBigLeft />
           </button>
