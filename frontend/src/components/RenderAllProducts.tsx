@@ -81,8 +81,6 @@ export const RenderAllProducts = () => {
     setIsPaymentFailed(currentUser?.subscription_status === "payment_failed");
   }, [userSubscriptionTier]);
 
-  console.log(currentUser);
-  console.log(isPaymentFailed);
 
   if (isPaymentFailed) {
     return (
