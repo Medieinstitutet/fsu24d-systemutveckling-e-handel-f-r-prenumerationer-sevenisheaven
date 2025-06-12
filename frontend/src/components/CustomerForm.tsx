@@ -21,6 +21,7 @@ export const CustomerForm = ({ user, setUser }: CustomerFormProps) => {
     setUser(prev => ({ ...prev, [name]: value }));
   };
 
+  
   return (
     <form>
       <h3>Login Details</h3>

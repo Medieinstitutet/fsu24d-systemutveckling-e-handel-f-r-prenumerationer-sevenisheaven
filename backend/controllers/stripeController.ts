@@ -38,6 +38,18 @@ export const checkoutSessionEmbedded = async (req, res) => {
       customer_email: user.email,
       client_reference_id: subscription,
       return_url: `${process.env.CLIENT_URL}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        email: user.email,
+        password: user.password,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        phone: user.phone,
+        subscription,
+        street_address: user.street_address,
+        city: user.city,
+        postal_code: user.postal_code,
+        country: user.country,
+      },
     });
 
     res.json({ clientSecret: session.client_secret });
@@ -46,7 +58,6 @@ export const checkoutSessionEmbedded = async (req, res) => {
     res.status(500).json({ error: "Failed to create checkout session" });
   }
 };
-
 export const updateSubscription = async (req, res) => {
   const { currentStripeSubscriptionId, subscriptionId, email } = req.body;
 
@@ -159,27 +170,60 @@ export const webhook = async (req, res) => {
 
   try {
     if (event.type === "checkout.session.completed") {
-      const session = await stripe.checkout.sessions.retrieve(
-        event.data.object.id
-      );
-      const customerEmail = session.customer_email;
-      const subscriptionId = session.client_reference_id;
-      const stripeSubscriptionId = session.subscription;
+  const session = await stripe.checkout.sessions.retrieve(event.data.object.id);
 
-      await User.updateOne(
-        { email: customerEmail },
-        {
-          $set: {
-            subscription_id: subscriptionId,
-            stripe_subscription_id: stripeSubscriptionId,
-            subscription_status: "payment_successfull",
-          },
-        }
-      );
-      const user = await User.findOne({ email: customerEmail });
-      if (user) {
-        await sendConfirmationEmail(user);
+  const {
+    email,
+    password,
+    firstname,
+    lastname,
+    phone,
+    subscription,
+    street_address,
+    city,
+    postal_code,
+    country,
+  } = session.metadata;
+
+  const stripeSubscriptionId = session.subscription;
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // Skapa ny användare
+    user = await User.create({
+      email,
+      password,
+      firstname,
+      lastname,
+      phone,
+      street_address,
+      city,
+      postal_code,
+      country,
+      subscription_id: subscription,
+      stripe_subscription_id: stripeSubscriptionId,
+      subscription_status: "payment_successfull",
+    });
+  } else {
+    // Uppdatera befintlig användare
+    await User.updateOne(
+      { email },
+      {
+        $set: {
+          subscription_id: subscription,
+          stripe_subscription_id: stripeSubscriptionId,
+          subscription_status: "payment_successfull",
+        },
       }
+    );
+  }
+
+  if (user) {
+    await sendConfirmationEmail(user);
+  }
+
+  return res.json({ received: true });
     } else if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
 
