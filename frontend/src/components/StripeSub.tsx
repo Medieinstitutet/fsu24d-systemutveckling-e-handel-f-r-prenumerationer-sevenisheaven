@@ -1,22 +1,24 @@
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
+import {
+  EmbeddedCheckout,
+  EmbeddedCheckoutProvider,
+} from "@stripe/react-stripe-js";
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { API_URL } from "../services/baseService";
 
 interface StripeSubProps {
-    user: {
-        email: string;
-        password: string;
-        firstname: string;
-        lastname: string;
-        phone: string;
-        country: string;
-        city: string;
-        street_address: string;
-        postal_code: string;
-    };
-  
-  subscription: string
+  user: {
+    email: string;
+    password: string;
+    firstname: string;
+    lastname: string;
+    phone: string;
+    country: string;
+    city: string;
+    street_address: string;
+    postal_code: string;
+  };
+  subscription: string;
 }
 
 const stripePromise = loadStripe(
@@ -24,40 +26,46 @@ const stripePromise = loadStripe(
 );
 
 export const StripeSub = ({ user, subscription }: StripeSubProps) => {
-    const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!user) return;
+  useEffect(() => {
+    if (!user?.email || !subscription) return;
 
-        const fetchClientSecret = async () => {
-            try {
-                const response = await fetch(
-                    `${API_URL}/stripe/create-checkout-session-embedded`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ user,subscription }),
-                    }
-                );
-              const data = await response.json();
-                setClientSecret(data.clientSecret);
-            } catch (error) {
-                console.error("Error fetching client secret:", error);
-            }
-        };
+    const setupCheckout = async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/stripe/create-checkout-session-embedded`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user, subscription }),
+          }
+        );
 
-        fetchClientSecret();
-    }, [user]);
+        if (!response.ok) {
+          throw new Error("Failed to create Stripe session");
+        }
 
-    if (!clientSecret) {
-        return <p>Laddar betalningssession...</p>;
-    }
+        const data = await response.json();
+        setClientSecret(data.clientSecret);
+      } catch (err) {
+        console.error("StripeSub error:", err);
+        setError("Ett fel uppstod vid uppstart av betalning");
+      }
+    };
 
-    return (
-        <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
-            <EmbeddedCheckout />
-        </EmbeddedCheckoutProvider>
-    );
+    setupCheckout();
+  }, [user, subscription]);
+
+  if (error) return <p className="error">{error}</p>;
+  if (!clientSecret) return <p>Laddar betalningssession...</p>;
+
+  return (
+    <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+      <EmbeddedCheckout />
+    </EmbeddedCheckoutProvider>
+  );
 };
