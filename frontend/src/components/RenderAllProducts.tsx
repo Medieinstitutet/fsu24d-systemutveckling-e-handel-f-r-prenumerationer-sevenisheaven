@@ -50,7 +50,7 @@ export const RenderAllProducts = () => {
 
   const handleAddClick = (e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
-    if (cart) {
+    if (cart?.product?._id) {
       setNewSock(product);
       setPopupTrigger(true);
     } else {
