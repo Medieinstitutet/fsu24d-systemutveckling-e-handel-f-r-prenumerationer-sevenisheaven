@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Product } from "../models/Products";
 
 export const UpgradePopup = ({
@@ -14,7 +15,7 @@ export const UpgradePopup = ({
   return (
     <div className="overlay">
       <div className="modal">
-         <button onClick={onClose} className="close_btn">
+        <button onClick={onClose} className="close_btn">
           ✕
         </button>
         <h2>Upgrade Needed</h2>
@@ -22,9 +23,9 @@ export const UpgradePopup = ({
           The product <strong>{product.product_name}</strong> requires{" "}
           <strong>{product.subscription_id.level_name}</strong> tier access.
         </p>
-        <button onClick={() => (window.location.href = "/change_subscription")}>
-          Upgrade Now
-        </button>
+        <Link to={"/change_subscription"}>
+          <button>Upgrade Now</button>
+        </Link>
       </div>
     </div>
   );
