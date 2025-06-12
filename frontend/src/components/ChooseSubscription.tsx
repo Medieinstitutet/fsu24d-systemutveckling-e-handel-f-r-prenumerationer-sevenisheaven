@@ -29,7 +29,7 @@ export const ChooseSubscription = ({
             <div className="subscription">
               <div className="level-div">
                 <h4>{s.level_name}</h4>
-                <img style={{ height: "80px" }} src={s.imageUrl} />
+                <img style={{ height: "80px" }} src={window.location.hostname === "medieinstitutet.github.io" ? '/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven' : ''}${s.imageUrl}`} />
                 <p>
                   {s.description}
                 </p>
