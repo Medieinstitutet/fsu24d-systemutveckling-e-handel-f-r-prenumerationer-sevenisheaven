@@ -4,13 +4,31 @@ import {
   createUser,
   updateUser,
   fetchUserByEmail,
+  fetchAllUsers,
 } from "../services/userServices";
 import { saveToLocalStorage } from "../utils/localStorage";
 
 export const useUser = () => {
+  const [users, setUsers] = useState<Users[]>([]);
   const [user, setUser] = useState<Users | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+
+
+    const fetchAllUsersHandler = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchAllUsers();
+      setUsers(data);
+      return data;
+    } catch (error) {
+      setError("Error fetching subscription");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   const fetchUserByEmailHandler = async (email: string) => {
     try {
@@ -57,7 +75,8 @@ export const useUser = () => {
     createUserHandler,
     updateUserHandler,
     fetchUserByEmailHandler,
-    user,
+    fetchAllUsersHandler,
+    user, users,
     loading,
     error,
   };
