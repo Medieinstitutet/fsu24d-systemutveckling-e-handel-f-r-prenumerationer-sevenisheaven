@@ -35,41 +35,76 @@ export const sendEmail = async (to: string, subject: string, html: string, text:
   }
 };
 
+const logoUrl = "https://medieinstitutet.github.io/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven/assets/logo-OrioW2zI.png";
+
+const baseStyles = `
+  font-family: Arial, sans-serif;
+  color: #333;
+  padding: 20px;
+  line-height: 1.5;
+`;
+
+const emailWrapper = (title: string, content: string) => `
+  <div style="${baseStyles}">
+    <img src="${logoUrl}" alt="Company Logo" style="max-width: 150px; margin-bottom: 20px;" />
+    <h1>${title}</h1>
+    ${content}
+    <p style="margin-top: 40px;">Kind regards,<br>Totally Confused Socks</p>
+  </div>
+`;
+
 export const sendConfirmationEmail = async (user) => {
   const plan = getPlanName(user.subscription_id);
-  await sendEmail(
-    user.email,
-    `Subscription Confirmation - ${plan}`,
-    `<h1>Thank you for subscribing to ${plan}, ${user.firstname}!</h1><p>We hope you enjoy your experience with us.</p><h2>THIS IS JUST A TEST!</h2>`,
-    `Hello ${user.firstname} ${user.lastname}, thanks for your recent purchase of the ${plan} plan.`
+  const html = emailWrapper(
+    "Welcome to " + plan + "!",
+    `<p>Hi ${user.firstname},</p>
+     <p>Thank you for subscribing to our <strong>${plan}</strong> plan. We're thrilled to have you with us.</p>
+     <p>You now have full access to everything included in your plan.</p>
+     <p>If you have any questions, feel free to contact us anytime.</p>`
   );
+
+  const text = `Hi ${user.firstname}, thanks for subscribing to the ${plan} plan. We're happy to have you with us!`;
+
+  await sendEmail(user.email, `Subscription Confirmation – ${plan}`, html, text);
 };
 
 export const sendChangeEmail = async (email: string, subscriptionId: string) => {
   const plan = getPlanName(subscriptionId);
-  await sendEmail(
-    email,
-    `Subscription Updated - ${plan}`,
-    `<h1>Your subscription was changed to ${plan}!</h1><p>Enjoy your new plan!</p><h2>THIS IS JUST A TEST!</h2>`,
-    `Thanks for changing to the ${plan} plan.`
+  const html = emailWrapper(
+    "Subscription Updated",
+    `<p>Hello!</p>
+     <p>Your subscription has been successfully updated to <strong>${plan}</strong>.</p>
+     <p>We hope you enjoy your new benefits!</p>`
   );
+
+  const text = `Your subscription has been updated to ${plan}. Enjoy your new plan!`;
+
+  await sendEmail(email, `Subscription Updated – ${plan}`, html, text);
 };
 
 export const sendFailureEmail = async (user, invoiceUrl) => {
-  await sendEmail(
-    user.email,
-    "Missed Payment",
-      `<h1>Hello ${user.firstname}, there was a problem with your latest payment. Please visit: ${invoiceUrl}</h1>`,
-      "If you dont pay the outstanding balance within a week your subscription will be terminated"
+  const html = emailWrapper(
+    "Payment Failed",
+    `<p>Hi ${user.firstname},</p>
+     <p>Unfortunately, your most recent payment was unsuccessful.</p>
+     <p>Please <a href="${invoiceUrl}">click here to update your payment method</a> to avoid service interruption.</p>
+     <p>If we don't receive payment within 7 days, your subscription may be cancelled.</p>`
   );
+
+  const text = `Hi ${user.firstname}, your latest payment failed. Please pay here: ${invoiceUrl}`;
+
+  await sendEmail(user.email, "Payment Issue – Action Required", html, text);
 };
 
 export const sendPaymentSuccesEmail = async (user) => {
-  await sendEmail(
-    user.email,
-    "Payment Succeded",
-      `<h1>Hello ${user.firstname}, your latest payment is paid</h1>`,
-      "Your subscription will continue as planned"
+  const html = emailWrapper(
+    "Payment Received",
+    `<p>Hi ${user.firstname},</p>
+     <p>Your latest payment was successfully processed. Your subscription continues as planned.</p>
+     <p>Thank you for staying with us!</p>`
   );
-};
 
+  const text = `Hi ${user.firstname}, your payment was successful. Thanks for staying with us!`;
+
+  await sendEmail(user.email, "Payment Confirmation", html, text);
+};
