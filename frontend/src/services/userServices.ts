@@ -2,6 +2,10 @@ import { IUserCreate, IUserUpdate, Users } from "../models/Users";
 import { api, handleRequest } from "./baseService";
 const USERS_ENDPOINT = "/users";
 
+export const fetchAllUsers = async () => {
+  return handleRequest<Users[]>(api.get(`${USERS_ENDPOINT}`));
+};
+
 export const fetchUserByEmail = async (email: string) => {
   return handleRequest<Users>(api.get(`${USERS_ENDPOINT}/${email}`));
 };

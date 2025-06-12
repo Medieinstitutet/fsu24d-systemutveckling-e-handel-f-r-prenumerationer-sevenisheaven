@@ -3,9 +3,9 @@ import { useAuth } from "../hooks/useAuth";
 import { useUser } from "../hooks/useUser";
 import { Users } from "../models/Users";
 import { ConfirmSubscriptionChangePopup } from "./ConfirmSubscriptionChangePopup";
-import SockEmergency from "../assets/sock_emergency.png";
-import SockRoll from "../assets/sock&roll.png";
-import SockRoyalty from "../assets/sock_royalty.png";
+import SockEmergency from "/sock_emergency.png";
+import SockRoll from "/sock&roll.png";
+import SockRoyalty from "/sock_royalty.png";
 import { fetchSubscriptionById } from "../services/subscriptionServices";
 
 export const ChangeSubscription = () => {

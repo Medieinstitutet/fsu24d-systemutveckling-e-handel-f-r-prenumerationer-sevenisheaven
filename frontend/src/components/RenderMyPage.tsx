@@ -68,8 +68,6 @@ export const RenderMyPage = () => {
     setIsPaymentFailed(currentUser?.subscription_status === "payment_failed");
   }, [currentUser]);
 
-  console.log(isPaymentFailed);
-
   return (
     <>
       <div>
