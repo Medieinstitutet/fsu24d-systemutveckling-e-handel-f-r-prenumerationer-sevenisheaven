@@ -35,7 +35,7 @@ export const sendEmail = async (to: string, subject: string, html: string, text:
   }
 };
 
-const logoUrl = "https://medieinstitutet.github.io/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven/assets/logo-OrioW2zI.png";
+const logoUrl = "https://raw.githubusercontent.com/Medieinstitutet/fsu24d-systemutveckling-e-handel-f-r-prenumerationer-sevenisheaven/refs/heads/main/frontend/src/assets/logo.png";
 
 const baseStyles = `
   font-family: Arial, sans-serif;
