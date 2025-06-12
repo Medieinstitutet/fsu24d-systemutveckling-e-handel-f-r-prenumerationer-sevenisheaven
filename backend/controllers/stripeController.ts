@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import User from "../models/User";
+import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 dotenv.config();
 import {
@@ -130,8 +131,8 @@ export const cancelSubscription = async (req: Request, res: Response) => {
     }
   );
 
-  const endTimestamp = canceledSubscription.cancel_at; // Unix timestamp in seconds
-  const endDate = new Date(endTimestamp * 1000); // Convert to JS Date
+  const endTimestamp = canceledSubscription.cancel_at; 
+  const endDate = new Date(endTimestamp * 1000);
   await User.updateOne(
     { email },
     {
@@ -170,60 +171,63 @@ export const webhook = async (req, res) => {
 
   try {
     if (event.type === "checkout.session.completed") {
-  const session = await stripe.checkout.sessions.retrieve(event.data.object.id);
+      const session = await stripe.checkout.sessions.retrieve(
+        event.data.object.id
+      );
 
-  const {
-    email,
-    password,
-    firstname,
-    lastname,
-    phone,
-    subscription,
-    street_address,
-    city,
-    postal_code,
-    country,
-  } = session.metadata;
+      const {
+        email,
+        password,
+        firstname,
+        lastname,
+        phone,
+        subscription,
+        street_address,
+        city,
+        postal_code,
+        country,
+      } = session.metadata;
 
-  const stripeSubscriptionId = session.subscription;
+      const stripeSubscriptionId = session.subscription;
 
-  let user = await User.findOne({ email });
+      let user = await User.findOne({ email });
 
-  if (!user) {
-    // Skapa ny användare
-    user = await User.create({
-      email,
-      password,
-      firstname,
-      lastname,
-      phone,
-      street_address,
-      city,
-      postal_code,
-      country,
-      subscription_id: subscription,
-      stripe_subscription_id: stripeSubscriptionId,
-      subscription_status: "payment_successfull",
-    });
-  } else {
-    // Uppdatera befintlig användare
-    await User.updateOne(
-      { email },
-      {
-        $set: {
+      if (!user) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        user = await User.create({
+          email,
+          password: hashedPassword, 
+          firstname,
+          lastname,
+          phone,
+          street_address,
+          city,
+          postal_code,
+          country,
           subscription_id: subscription,
           stripe_subscription_id: stripeSubscriptionId,
           subscription_status: "payment_successfull",
-        },
+        });
+      } else {
+        
+        await User.updateOne(
+          { email },
+          {
+            $set: {
+              subscription_id: subscription,
+              stripe_subscription_id: stripeSubscriptionId,
+              subscription_status: "payment_successfull",
+            },
+          }
+        );
       }
-    );
-  }
 
-  if (user) {
-    await sendConfirmationEmail(user);
-  }
+      if (user) {
+        await sendConfirmationEmail(user);
+      }
 
-  return res.json({ received: true });
+      return res.json({ received: true });
     } else if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
 
@@ -262,7 +266,6 @@ export const webhook = async (req, res) => {
         );
         await sendFailureEmail(user, hostedInvoiceUrl);
       }
-
     } else if (event.type === "invoice.payment_succeeded") {
       const invoice = event.data.object;
       const email = invoice.customer_email;
@@ -271,9 +274,13 @@ export const webhook = async (req, res) => {
       if (user) {
         await User.updateOne(
           { email },
-          { $set: { subscription_status: "payment_successfull", retry_payment_url: null } }
+          {
+            $set: {
+              subscription_status: "payment_successfull",
+              retry_payment_url: null,
+            },
+          }
         );
-        await sendPaymentSuccesEmail(user);
       }
     } else {
       console.log(`Unhandled event type: ${event.type}`);
